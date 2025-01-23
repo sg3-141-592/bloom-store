@@ -12,6 +12,12 @@ struct FolderData {
     std::ofstream file;
     int recordCount = 0;
     int bundleId = 0;
+    std::string buffer;
+
+    FolderData() {
+        // Pre-allocate since we'll be appending to this a lot
+        buffer.reserve(1024);
+    }
 };
 
 class FolderDataSink : public DataSink {

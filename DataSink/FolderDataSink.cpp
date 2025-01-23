@@ -17,8 +17,7 @@ bool FolderDataSink::writeNext(json in)
     
     const std::string path = _getPathFunc(in);
 
-    // Check to see if we already have a hook to the current path
-    // if not create one
+    // Check to see if we already have a hook to the current path, if not create one
     if (_pathToHook.find(path) == _pathToHook.end()) {
         _pathToHook[path].file = std::ofstream(path + std::to_string(_pathToHook[path].bundleId) + ".json", std::ios::app);
         if (!_pathToHook[path].file.is_open()) {
@@ -27,15 +26,21 @@ bool FolderDataSink::writeNext(json in)
         }
     }
 
-    _pathToHook[path].file << in.dump() << std::endl;
+    _pathToHook[path].buffer.append(in.dump() + "\n");
+    // _pathToHook[path].file << in.dump() << std::endl;
     _pathToHook[path].recordCount++;
 
     // Check if we should move to the next bundle
     if (_pathToHook[path].recordCount >= BUNDLE_SIZE) {
         _pathToHook[path].recordCount = 0;
         _pathToHook[path].bundleId++;
-        
+
+        // Write the buffer to the file
+        _pathToHook[path].file << _pathToHook[path].buffer;
         _pathToHook[path].file.close();
+        
+        // Create the new buffer and file
+        _pathToHook[path].buffer.clear();
         _pathToHook[path].file.open(path + std::to_string(_pathToHook[path].bundleId) + ".json", std::ios::app);
     }
     
