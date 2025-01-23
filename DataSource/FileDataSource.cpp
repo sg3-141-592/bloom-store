@@ -25,8 +25,27 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<std::stri
     if (!file.is_open()) {
         std::cerr << "Error opening file\n";
     }
+
+    _thread = std::thread ([this]() {
+        std::ifstream infile(_filename);
+        std::string sa;
+        while (getline(file, sa)) {
+            // Push value to the queue
+            if(!_queue->push(sa)) {
+                // TODO: Add behaviour for dealing with the queue full
+                std::cerr << "Error pushing value to the queue\n";
+                std::this_thread::yield();
+            }
+        }
+        _queue->push("EOF");
+
+        std::cout << "Finished pushing to queue\n";
+
+        infile.close();
+    });
 }
 
 FileDataSource::~FileDataSource() {
     file.close();
+    _thread.join();
 };

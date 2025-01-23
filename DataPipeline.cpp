@@ -21,22 +21,28 @@ void DataPipeline::process()
 
     // Create the Source
     _source->start(sourceToProcessorQueue);
-    
+
+    // Start the processors
+    for (const auto &processor : _processors)
+    {
+        // TODO: This will have to change in future to build the queues it needs to on the fly
+        processor->start(sourceToProcessorQueue);
+    }
+
     //
     std::optional<std::string> line;
     while ((line = _source->readNext()))
     {
         std::string result;
-        sourceToProcessorQueue->consume_one([&result](const std::string& data) {
-            result = data;
-        });
-        for (const auto& processor : _processors)
+        sourceToProcessorQueue->consume_one([&result](const std::string &data)
+                                            { result = data; });
+        for (const auto &processor : _processors)
         {
-            if (processor->getInstanceType() == typeid(JsonDeserializer)) {
-                auto castedProcessor = dynamic_cast<JsonDeserializer*>(processor.get());
+            if (processor->getInstanceType() == typeid(JsonDeserializer))
+            {
+                auto castedProcessor = dynamic_cast<JsonDeserializer *>(processor.get());
                 _sink->writeNext(castedProcessor->process(*line));
             }
         }
     }
-    
 };
