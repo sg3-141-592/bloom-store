@@ -8,6 +8,12 @@
 #include <string>
 #include <thread>
 
+struct FolderData {
+    std::ofstream file;
+    int recordCount = 0;
+    int bundleId = 0;
+};
+
 class FolderDataSink : public DataSink {
 public:
     FolderDataSink(std::function<std::string(json)> getPathFunc);
@@ -16,6 +22,7 @@ public:
     ~FolderDataSink();
 private:
     std::function<std::string(json)> _getPathFunc;
-    std::map<std::string, std::ofstream> _pathToHook;
+    std::map<std::string, FolderData> _pathToHook;
     std::thread _thread;
+    const int BUNDLE_SIZE = 100;
 };

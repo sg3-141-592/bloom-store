@@ -1,5 +1,6 @@
 #include "FolderDataSink.h"
 
+#include <filesystem>
 #include <iostream>
 
 FolderDataSink::FolderDataSink(std::function<std::string(json)> getPathFunc)
@@ -9,18 +10,34 @@ FolderDataSink::FolderDataSink(std::function<std::string(json)> getPathFunc)
 
 bool FolderDataSink::writeNext(json in) 
 {
+    std::filesystem::path dir = std::filesystem::path(_getPathFunc(in)).parent_path();
+    if (!std::filesystem::exists(dir)) {
+        std::filesystem::create_directories(dir);
+    }
+    
     const std::string path = _getPathFunc(in);
+
     // Check to see if we already have a hook to the current path
     // if not create one
     if (_pathToHook.find(path) == _pathToHook.end()) {
-        _pathToHook[path] = std::ofstream(path, std::ios::app);
-        if (!_pathToHook[path].is_open()) {
+        _pathToHook[path].file = std::ofstream(path + std::to_string(_pathToHook[path].bundleId) + ".json", std::ios::app);
+        if (!_pathToHook[path].file.is_open()) {
             std::cerr << "Failed to open file: " << path << std::endl;
             return false;
         }
     }
 
-    _pathToHook[path] << in.dump() << std::endl;
+    _pathToHook[path].file << in.dump() << std::endl;
+    _pathToHook[path].recordCount++;
+
+    // Check if we should move to the next bundle
+    if (_pathToHook[path].recordCount >= BUNDLE_SIZE) {
+        _pathToHook[path].recordCount = 0;
+        _pathToHook[path].bundleId++;
+        
+        _pathToHook[path].file.close();
+        _pathToHook[path].file.open(path + std::to_string(_pathToHook[path].bundleId) + ".json", std::ios::app);
+    }
     
     return true;
 }
@@ -42,7 +59,7 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
 
         // Finish writing all of the files    
         for (auto& [path, hook] : _pathToHook) {
-            hook.close();
+            hook.file.close();
         }
 
         std::cout << "Finished writing messages\n";
