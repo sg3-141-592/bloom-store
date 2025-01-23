@@ -3,7 +3,6 @@
 #include "DataSource/FileDataSource.h"
 #include "DataSink/FolderDataSink.h"
 #include "RecordProcessor/JsonDeserializer.h"
-#include "RecordProcessor/ExtractFields.h"
 #include "DataPipeline.h"
 
 #include "config.h"
@@ -19,10 +18,8 @@ int main()
     DataPipeline pipeline(fileSource, folderSink);
 
     std::shared_ptr<JsonDeserializer> deserializer = std::make_shared<JsonDeserializer>();
-    std::shared_ptr<ExtractFields> extractFields = std::make_shared<ExtractFields>();
 
     pipeline.addProcessor<std::string, json>(deserializer);
-    pipeline.addProcessor<json, std::string>(extractFields);
 
     pipeline.process();
 
