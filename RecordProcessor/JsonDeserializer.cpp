@@ -30,33 +30,38 @@ inline json JsonDeserializer::process(std::string in)
     return extracted;
 };
 
-void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> queue)
+void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, 
+                              std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue)
 {
-    _sourceQueue = queue;
-
-    _thread = std::thread([this]() {
-        // Read from the queue while there's still messages in it
+    _thread = std::thread([this, sourceQueue, sinkQueue]()
+    {
         std::cout << "Starting processing messages\n";
+
         std::string message;
         while (true)
         {
-            if (_sourceQueue->pop(message))
+            if (sourceQueue->pop(message))
             {
-                if (message != "EOF")
-                {
-                    // std::cout << "Processing message: " << message << std::endl;
-                    // Process the message
-                    json processedMessage = process(message);
-                    // std::cout << "Processed message: " << processedMessage.dump() << std::endl;
-                } else {
+                if (message == "EOF") {
                     break;
+                }
+
+                json processedMessage = process(message);
+                
+                while (!sinkQueue->push(std::move(processedMessage)))
+                {
+                    std::this_thread::yield();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
             }
         }
-        std::cout << "Finished processing messages\n"; 
-    });
-};
+        sinkQueue->push(json::object());
 
-JsonDeserializer::~JsonDeserializer() {
+        std::cout << "Finished processing messages\n";
+    }); 
+}
+
+JsonDeserializer::~JsonDeserializer()
+{
     _thread.join();
 };

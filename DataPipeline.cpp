@@ -23,11 +23,11 @@ void DataPipeline::process()
     _source->start(sourceToProcessorQueue);
 
     // Start the processors
-    for (const auto &processor : _processors)
-    {
-        // TODO: This will have to change in future to build the queues it needs to on the fly
-        processor->start(sourceToProcessorQueue);
-    }
+    // for (const auto &processor : _processors)
+    // {
+    //     // TODO: This will have to change in future to build the queues it needs to on the fly
+    //     processor->start(sourceToProcessorQueue);
+    // }
 
     //
     std::optional<std::string> line;

@@ -4,7 +4,7 @@ project(IlmBloomStore VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 
 include(FetchContent)
 
@@ -17,7 +17,6 @@ FetchContent_MakeAvailable(nlohmann_json)
 set(SOURCES
     DataSource/FileDataSource.cpp
     DataSink/FolderDataSink.cpp
-    # RecordProcessor/ExtractFields.cpp
     RecordProcessor/JsonDeserializer.cpp
     DataPipeline.cpp
     Archive.cpp
