@@ -8,14 +8,17 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-#include "config.h"
+#include "config.hpp"
 
 int main()
 {
+    // Load config on start-up
+    Config config;
+
     std::shared_ptr<FileDataSource> fileSource = std::make_shared<FileDataSource>("./artists.json");
 
-    auto sourceToProcessorQueue = std::make_shared<boost::lockfree::spsc_queue<std::string>>(1024);
-    auto processorToSinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(1024);
+    auto sourceToProcessorQueue = std::make_shared<boost::lockfree::spsc_queue<std::string>>(config.generalConfig.QueueSize);
+    auto processorToSinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(config.generalConfig.QueueSize);
 
     fileSource->start(sourceToProcessorQueue);
 

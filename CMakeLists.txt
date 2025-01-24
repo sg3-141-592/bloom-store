@@ -34,21 +34,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# FetchContent_Declare(
-#     iniparser
-#     GIT_REPOSITORY https://gitlab.com/iniparser/iniparser.git
-#     GIT_TAG v4.2.5
-# )
-# FetchContent_GetProperties(iniparser)
-# if(NOT iniparser_POPULATED)
-#     FetchContent_Populate(iniparser)
-#     set(INIPARSER_BUILD_SHARED OFF CACHE BOOL "Disable building shared library" FORCE)
-#     add_subdirectory(${iniparser_SOURCE_DIR} ${iniparser_BINARY_DIR})
-# endif()
-
-# # Add library explicitly
-# add_library(iniparser STATIC IMPORTED)
-
 set(SOURCES
     DataSource/FileDataSource.cpp
     DataSink/FolderDataSink.cpp
@@ -59,7 +44,7 @@ set(SOURCES
 
 add_executable(ArchiveFiles ${SOURCES})
 
-target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB) # iniparser
+target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB)
 
 # -------------------------------------------------------
 # Testing

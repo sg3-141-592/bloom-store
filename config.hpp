@@ -1,5 +1,8 @@
 #include <string>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -15,3 +18,17 @@ std::string get_path_func(json in) {
     }
     return "out/unknown";
 }
+
+class Config {
+public:
+    Config() {
+        boost::property_tree::ptree pt;
+        boost::property_tree::ini_parser::read_ini("config.ini", pt);
+
+        generalConfig.QueueSize = pt.get<int>("General.queue_size");
+    };
+
+    struct GeneralConfig {
+        int QueueSize = 1024;
+    } generalConfig;
+};
