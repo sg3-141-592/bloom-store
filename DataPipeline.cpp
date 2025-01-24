@@ -36,13 +36,13 @@ void DataPipeline::process()
         std::string result;
         sourceToProcessorQueue->consume_one([&result](const std::string &data)
                                             { result = data; });
-        for (const auto &processor : _processors)
-        {
-            if (processor->getInstanceType() == typeid(JsonDeserializer))
-            {
-                auto castedProcessor = dynamic_cast<JsonDeserializer *>(processor.get());
-                _sink->writeNext(castedProcessor->process(*line));
-            }
-        }
+        // for (const auto &processor : _processors)
+        // {
+        //     if (processor->getInstanceType() == typeid(JsonDeserializer))
+        //     {
+        //         auto castedProcessor = dynamic_cast<JsonDeserializer *>(processor.get());
+        //         _sink->writeNext(castedProcessor->process(*line));
+        //     }
+        // }
     }
 };

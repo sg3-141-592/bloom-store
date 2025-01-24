@@ -12,10 +12,6 @@ public:
     virtual ~AbstractProcessor() = default; // Virtual destructor
     virtual void process() = 0; // Pure virtual function
     virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) = 0; // Pure virtual function
-
-    const std::type_info& getInstanceType() const {
-        return typeid(*this);
-    }
 };
 
 template<typename InputType, typename OutputType>

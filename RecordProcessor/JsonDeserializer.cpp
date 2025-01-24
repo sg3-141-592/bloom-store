@@ -38,7 +38,7 @@ void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<std::st
         std::cout << "Starting processing messages\n";
 
         std::string message;
-        while (true)
+        while (!_stopFlag)
         {
             if (sourceQueue->pop(message))
             {
@@ -61,7 +61,18 @@ void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<std::st
     }); 
 }
 
+void JsonDeserializer::stop()
+{
+    _stopFlag = true;
+    if (_thread.joinable()) {
+         _thread.join();
+    }
+}
+
 JsonDeserializer::~JsonDeserializer()
 {
-    _thread.join();
+    // Handles case if thread has already been killed or never started
+    if (_thread.joinable()) {
+         _thread.join();
+    }
 };
