@@ -9,7 +9,6 @@
 #include <thread>
 
 struct FolderData {
-    std::ofstream file;
     int recordCount = 0;
     int bundleId = 0;
     std::string buffer;

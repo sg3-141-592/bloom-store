@@ -5,10 +5,10 @@
 #include "RecordProcessor/JsonDeserializer.h"
 #include "DataPipeline.h"
 
-#include "config.h"
-
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+#include "config.h"
 
 int main()
 {

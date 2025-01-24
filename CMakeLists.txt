@@ -9,6 +9,17 @@ set(CMAKE_BUILD_TYPE Release)
 include(FetchContent)
 
 FetchContent_Declare(
+    bloom_filter
+    GIT_REPOSITORY https://github.com/ArashPartow/bloom.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(bloom_filter)
+
+include_directories(${bloom_filter_SOURCE_DIR})
+
+include(FetchContent)
+
+FetchContent_Declare(
     nlohmann_json
     URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
 )
