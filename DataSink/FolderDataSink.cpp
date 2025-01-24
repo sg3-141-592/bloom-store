@@ -1,5 +1,7 @@
 #include "FolderDataSink.h"
 
+#include "CompressBundle.hpp"
+
 #include <filesystem>
 #include <iostream>
 
@@ -64,6 +66,7 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
 
         // Finish writing all of the files    
         for (auto& [path, hook] : _pathToHook) {
+            hook.file << hook.buffer;
             hook.file.close();
         }
 

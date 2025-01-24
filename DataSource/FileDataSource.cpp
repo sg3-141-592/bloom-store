@@ -25,6 +25,10 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<std::stri
         std::ifstream infile(_filename);
         std::string sa;
         while (getline(infile, sa)) {
+
+            // Get a checkpoint for the file
+            std::streampos checkpoint = infile.tellg();
+            
             // Push value to the queue
             if(!queue->push(sa)) {
                 // If can't push to the queue, then pause and try again

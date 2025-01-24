@@ -30,5 +30,5 @@ private:
     std::function<std::string(json)> _getPathFunc;
     std::map<std::string, FolderData> _pathToHook;
     std::thread _thread;
-    const int BUNDLE_SIZE = 100;
+    const int BUNDLE_SIZE = 256;
 };

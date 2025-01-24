@@ -4,7 +4,7 @@ project(IlmBloomStore VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 include(FetchContent)
 
@@ -13,6 +13,8 @@ FetchContent_Declare(
     URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
 )
 FetchContent_MakeAvailable(nlohmann_json)
+
+find_package(ZLIB REQUIRED)
 
 set(SOURCES
     DataSource/FileDataSource.cpp
@@ -24,4 +26,4 @@ set(SOURCES
 
 add_executable(ArchiveFiles ${SOURCES})
 
-target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB)
