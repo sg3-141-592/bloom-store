@@ -4,8 +4,9 @@
 
 #define SLEEP_TIME 100 // how long to sleep when queues are full
 
-FileDataSource::FileDataSource(std::string&& filename) {
-    _filename = std::move(filename);
+FileDataSource::FileDataSource(std::string filename) {
+    // TODO: Get rid of this unnecessary copy
+    _filename = filename;
 };
 
 void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue) {
@@ -34,7 +35,7 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> 
 
         infile.close();
 
-        completed.store(true);
+        _completed.store(true);
     });
 }
 

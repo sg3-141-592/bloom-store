@@ -1,7 +1,12 @@
+#include <chrono>
+#include <thread>
+
 #include <gtest/gtest.h>
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+#include <boost/lockfree/spsc_queue.hpp>
 
 #include "../RecordProcessor/JsonDeserializer.h"
 
@@ -21,12 +26,30 @@ protected:
 
 TEST_F(JsonDeserializerTest, DeserializeJson)
 {
-    const std::string test_json = "{\"name\": \"John\", \"age\": 30, \"car\": null}";
+    // Create a test queue of records
+    auto sourceQueue = std::make_shared<boost::lockfree::spsc_queue<Record>>(128);
+    auto sinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(128);
+
     JsonDeserializer deserializer;
-    try {
-        json result =  json::parse(test_json);
-        EXPECT_EQ(result["name"], "John");
-    } catch (const std::exception& e) {
-        FAIL() << "Exception thrown: " << e.what();
+    deserializer.start(sourceQueue, sinkQueue);
+
+    auto start = std::chrono::steady_clock::now();
+    auto timeout = std::chrono::seconds(5);
+
+    // Push test messages to the queue
+    Record record{R"({"key": "value"})", 0};
+    sourceQueue->push(record);
+    Record record2{"EOF", -1};
+    sourceQueue->push(record2);
+
+    while (!deserializer.isCompleted())
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        if (std::chrono::steady_clock::now() - start > timeout)
+        {
+            FAIL() << "Test timed out waiting for deserializer to complete.";
+            break;
+        }
     }
 }
