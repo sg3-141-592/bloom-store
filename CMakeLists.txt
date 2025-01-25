@@ -20,6 +20,23 @@ include_directories(${bloom_filter_SOURCE_DIR})
 include(FetchContent)
 
 FetchContent_Declare(
+    libbloom
+    GIT_REPOSITORY https://github.com/jvirkki/libbloom.git
+    GIT_TAG v2.0
+)
+FetchContent_MakeAvailable(libbloom)
+
+include_directories(${libbloom_SOURCE_DIR})
+add_custom_target(build_libbloom ALL
+    COMMAND make -C ${libbloom_SOURCE_DIR}
+)
+
+add_library(libbloom_static STATIC IMPORTED)
+set_target_properties(libbloom_static PROPERTIES
+    IMPORTED_LOCATION ${libbloom_SOURCE_DIR}/build/libbloom.a
+)
+
+FetchContent_Declare(
     nlohmann_json
     URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
 )
@@ -44,7 +61,16 @@ set(SOURCES
 
 add_executable(ArchiveFiles ${SOURCES})
 
-target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB)
+add_dependencies(ArchiveFiles build_libbloom)
+
+target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
+
+# -------------------------------------------------------
+# Searching
+# -------------------------------------------------------
+add_executable(Search Search.cpp)
+
+target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
 
 # -------------------------------------------------------
 # Testing
