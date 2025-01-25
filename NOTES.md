@@ -33,7 +33,9 @@ valgrind --tool=callgrind ./ArchiveFiles
 
 (?<timestamp>[0-9\:]+)\, (?<area>[A-Za-z]+) messages\/sec\: (?<messages_sec>[0-9]+)\, Total messages\: (?<total_messages>[0-9]+)
 
-Threads|Time
-1      |43.166
-2      |(Not working at the moment :\)
+```
+
+```
+34,147 bytes in 60 blocks
+
 ```

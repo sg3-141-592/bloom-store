@@ -50,15 +50,15 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
                           {
         std::cout << "Starting processing messages\n";
 
-        Record message;
+        
         while (!_stopFlag)
         {
-            message = sourceQueue->pop();
+            Record message = sourceQueue->pop();
             if (message.data == "EOF" && message.checkpoint == -1) {
                 break;
             }
 
-            json processedMessage = process(message.data);
+            json processedMessage = process(std::move(message.data));
             
             while (!sinkQueue->try_push(std::move(processedMessage)))
             {
@@ -92,4 +92,5 @@ JsonDeserializer::~JsonDeserializer()
     {
         _thread.join();
     }
+    delete _metricsTracker;
 };

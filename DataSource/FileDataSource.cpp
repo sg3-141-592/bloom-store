@@ -36,6 +36,7 @@ void FileDataSource::start(std::shared_ptr<TSQueue<Record>> queue) {
         }
 
         // Push EOF to terminate the queue
+        // TODO: Add handling for number of thread for EOF
         queue->push(Record{ "EOF", -1 });
 
         std::cout << "Finished loading messages\n";
@@ -48,6 +49,7 @@ void FileDataSource::start(std::shared_ptr<TSQueue<Record>> queue) {
 
 FileDataSource::~FileDataSource() {
     _thread.join();
+    delete _metricsTracker;
 };
 
 void FileDataSource::stop() {

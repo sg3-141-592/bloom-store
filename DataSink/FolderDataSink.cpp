@@ -85,4 +85,5 @@ void FolderDataSink::stop()
 FolderDataSink::~FolderDataSink()
 {
     _thread.join();
+    delete _metricsTracker;
 }

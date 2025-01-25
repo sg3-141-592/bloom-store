@@ -29,8 +29,7 @@ int main()
     pipeline = new DataPipeline(fileSource, folderSink, config);
 
     pipeline->addProcessor<std::string, json>(std::make_shared<JsonDeserializer>());
-    pipeline->addProcessor<std::string, json>(std::make_shared<JsonDeserializer>());
-
+    
     pipeline->process();
 
     return 0;
