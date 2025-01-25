@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-JsonDeserializer::JsonDeserializer() {
+JsonDeserializer::JsonDeserializer()
+{
     _metricsTracker = new MetricsTracker("JsonDeserializer");
 };
 
@@ -27,15 +28,26 @@ inline json JsonDeserializer::process(std::string in)
     {
         extracted["type"] = result["type"];
     }
+    if (result.contains("genres"))
+    {
+        extracted["genres"] = json::array();
+        for (const auto &genre : result["genres"])
+        {
+            if (genre.contains("name"))
+            {
+                extracted["genres"].push_back(genre["name"]);
+            }
+        }
+    }
 
     return extracted;
 };
 
-void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> sourceQueue, 
-                              std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue)
+void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> sourceQueue,
+                             std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue)
 {
     _thread = std::thread([this, sourceQueue, sinkQueue]()
-    {
+                          {
         std::cout << "Starting processing messages\n";
 
         Record message;
@@ -63,22 +75,23 @@ void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>
 
         std::cout << "Finished processing messages\n";
 
-        completed = true;
-    }); 
+        completed = true; });
 }
 
 void JsonDeserializer::stop()
 {
     _stopFlag = true;
-    if (_thread.joinable()) {
-         _thread.join();
+    if (_thread.joinable())
+    {
+        _thread.join();
     }
 }
 
 JsonDeserializer::~JsonDeserializer()
 {
     // Handles case if thread has already been killed or never started
-    if (_thread.joinable()) {
-         _thread.join();
+    if (_thread.joinable())
+    {
+        _thread.join();
     }
 };

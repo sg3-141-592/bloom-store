@@ -31,8 +31,8 @@ public:
             // std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ", " 
             //           << name << " messages/sec: " << lastSecondMessageCount 
             //           << ", Total messages: " << messageCount << std::endl;
-            std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ","
-                      << name << "," << lastSecondMessageCount << "," << messageCount << std::endl;
+            // std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ","
+            //           << name << "," << lastSecondMessageCount << "," << messageCount << std::endl;
             
             lastSecondMessageCount = 0;
             lastMetricReset = now;

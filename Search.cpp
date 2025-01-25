@@ -13,11 +13,27 @@ using json = nlohmann::json;
 #include "DataSink/CompressBundle.h"
 #include "Config.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::string testString("Tracy Chapman");
+    std::string testString;
 
-    // Find the path for search term
+    // Check if the command line arguments contain --name
+    for (int i = 1; i < argc; ++i)
+    {
+        if (std::string(argv[i]) == "--name" && i + 1 < argc)
+        {
+            testString = argv[i + 1];
+            break;
+        }
+    }
+
+    if (testString.empty())
+    {
+        std::cerr << "Usage: " << argv[0] << " --name <name>" << std::endl;
+        return 1;
+    }
+
+    // Rest of the code
     std::string path = get_path_func(testString);
 
     // Iterate over all the bloom filters in the directory for matches
@@ -35,13 +51,10 @@ int main()
         bloom bloomFilter;
         bloom_load(&bloomFilter, const_cast<char *>(bloomFile.c_str()));
 
-        // std::cout << "Filter Contains " << testString << ": " << bloom_check(&bloomFilter, testString.c_str(), testString.length()) << std::endl;
         if (bloom_check(&bloomFilter, testString.c_str(), testString.length()))
         {
-            // std::cout << "Filter may contain " << testString << std::endl;
             bloomFile.erase(bloomFile.end() - 6, bloomFile.end());
             std::string jsonGzFile = bloomFile + ".json.gz";
-            // std::cout << "Trying to open  " << jsonGzFile << std::endl; // Take bloom off the end of screen and add .json.gz
             std::string result = readGzipFileToString(jsonGzFile);
             std::istringstream stream(result);
             std::string line;
