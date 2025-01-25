@@ -46,3 +46,13 @@ void DataPipeline::process()
         }
     }
 };
+
+void DataPipeline::stop()
+{
+    _source->stop();
+    _sink->stop();
+    for (const auto &processor : _processors)
+    {
+        processor->stop();
+    }
+};

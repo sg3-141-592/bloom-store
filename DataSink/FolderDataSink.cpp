@@ -52,7 +52,7 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
         std::cout << "Starting writing messages\n";
 
         json sa;
-        while (true) {
+        while (_stopFlag == false) {
             if (queue->pop(sa)) {
                 if (sa.empty()) {  // Use empty() instead of comparing to empty object
                     break;
@@ -72,6 +72,12 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
         std::cout << "Finished writing messages\n"; });
 
         completed = true;
+}
+
+void FolderDataSink::stop()
+{
+    _stopFlag = true;
+    _thread.join();
 }
 
 FolderDataSink::~FolderDataSink()

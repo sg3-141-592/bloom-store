@@ -1,3 +1,4 @@
+#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -13,6 +14,7 @@ public:
     template<typename InputType, typename OutputType>
     void addProcessor(std::shared_ptr<RecordProcessor<InputType, OutputType>> processor);
     void process();
+    void stop();
 private:
     std::vector<std::shared_ptr<AbstractProcessor>> _processors;
     std::shared_ptr<DataSource> _source;

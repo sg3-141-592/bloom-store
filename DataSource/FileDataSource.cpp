@@ -22,7 +22,7 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<std::stri
 
         std::ifstream infile(_filename);
         std::string sa;
-        while (getline(infile, sa)) {
+        while (getline(infile, sa) && !_stopFlag) {
 
             // Get a checkpoint for the file
             std::streampos checkpoint = infile.tellg();
@@ -49,3 +49,8 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<std::stri
 FileDataSource::~FileDataSource() {
     _thread.join();
 };
+
+void FileDataSource::stop() {
+    _stopFlag = true;
+    _thread.join();
+}

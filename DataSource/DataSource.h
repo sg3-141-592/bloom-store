@@ -13,6 +13,8 @@ public:
     virtual ~DataSource() = default;
     virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> queue) = 0;
     virtual bool isCompleted() { return completed; };
+    virtual void stop() = 0;
 protected:
     std::atomic<bool> completed = false;
+    std::atomic<bool> _stopFlag{false}; // Used for handling cancelling processing
 };

@@ -8,13 +8,10 @@ class JsonDeserializer : public RecordProcessor<std::string, json>
 private:
     std::shared_ptr<boost::lockfree::spsc_queue<std::string>> _sourceQueue;
     std::thread _thread;
-    std::atomic<bool> _stopFlag{false}; // Used for handling cancelling processing
-    void stop();
-
 public:
     JsonDeserializer();
     json process(std::string in);
     void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue);
-
+    void stop();
     ~JsonDeserializer();
 };

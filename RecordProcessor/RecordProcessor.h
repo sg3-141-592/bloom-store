@@ -15,8 +15,10 @@ public:
     virtual void process() = 0; // Pure virtual function
     virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) = 0;
     virtual bool isCompleted() { return completed; };
+    virtual void stop() = 0;
 protected:
     std::atomic<bool> completed = false;
+    std::atomic<bool> _stopFlag{false}; // Used for handling cancelling processing
 };
 
 template<typename InputType, typename OutputType>

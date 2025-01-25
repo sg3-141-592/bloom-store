@@ -44,7 +44,7 @@ void signalHandler(int signum)
     std::cout << "Interrupt signal (" << signum << ") received.\n";
 
     // Send a signal to the DataProcessor to complete gracefully
-    // pipeline->stop();
+    pipeline->stop();
 
     exit(signum);
 }

@@ -18,4 +18,5 @@ public:
     std::optional<std::string> readNext();
     void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> queue);
     ~FileDataSource();
+    void stop();
 };

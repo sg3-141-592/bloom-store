@@ -40,6 +40,7 @@ public:
     bool writeNext(json in);
     void start(std::shared_ptr<boost::lockfree::spsc_queue<json>> queue);
     ~FolderDataSink();
+    void stop();
 
 private:
     std::function<std::string(std::string)> _getPathFunc;
