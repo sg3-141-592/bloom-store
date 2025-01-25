@@ -27,7 +27,7 @@ protected:
 TEST_F(JsonDeserializerTest, DeserializeJson)
 {
     // Create a test queue of records
-    auto sourceQueue = std::make_shared<boost::lockfree::spsc_queue<Record>>(128);
+    auto sourceQueue = std::make_shared<TSQueue<Record>>(128);
     auto sinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(128);
 
     JsonDeserializer deserializer;

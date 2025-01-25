@@ -43,7 +43,7 @@ inline json JsonDeserializer::process(std::string in)
     return extracted;
 };
 
-void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> sourceQueue,
+void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
                              std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue)
 {
     _thread = std::thread([this, sourceQueue, sinkQueue]()
@@ -53,19 +53,17 @@ void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>
         Record message;
         while (!_stopFlag)
         {
-            if (sourceQueue->pop(message))
-            {
-                if (message.data == "EOF" && message.checkpoint == -1) {
-                    break;
-                }
+            message = sourceQueue->pop();
+            if (message.data == "EOF" && message.checkpoint == -1) {
+                break;
+            }
 
-                json processedMessage = process(message.data);
-                
-                while (!sinkQueue->push(std::move(processedMessage)))
-                {
-                    std::this_thread::yield();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                }
+            json processedMessage = process(message.data);
+            
+            while (!sinkQueue->push(std::move(processedMessage)))
+            {
+                std::this_thread::yield();
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
             _metricsTracker->recordMessage();

@@ -19,9 +19,7 @@ DataPipeline::DataPipeline(std::shared_ptr<DataSource> source, std::shared_ptr<D
 void DataPipeline::process()
 {
     // Setup Source
-    TSQueue<Record> srcToProcessorQueue(_config.generalConfig.QueueSize);
-
-    auto sourceToProcessorQueue = std::make_shared<boost::lockfree::spsc_queue<Record>>(_config.generalConfig.QueueSize);
+    auto sourceToProcessorQueue = std::make_shared<TSQueue<Record>>(_config.generalConfig.QueueSize);
     _source->start(sourceToProcessorQueue);
 
     // Setup Sink
