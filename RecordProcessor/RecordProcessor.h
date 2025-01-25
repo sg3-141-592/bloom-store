@@ -9,11 +9,13 @@ using json = nlohmann::json;
 
 #include <boost/lockfree/spsc_queue.hpp>
 
+#include "../DataSource/DataSource.h"
+
 class AbstractProcessor {
 public:
     virtual ~AbstractProcessor() = default; // Virtual destructor
     virtual void process() = 0; // Pure virtual function
-    virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) = 0;
+    virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) = 0;
     virtual bool isCompleted() { return completed; };
     virtual void stop() = 0;
 protected:
@@ -28,7 +30,7 @@ public:
     void process() override {
         // Needed otherwise the derived classes would think they're abstract
     };
-    void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) override {
+    void start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) override {
         // Needed otherwise the derived classes would think they're abstract
     };
 };

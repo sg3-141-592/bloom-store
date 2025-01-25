@@ -59,6 +59,7 @@ set(SOURCES
     DataPipeline.cpp
     Archive.cpp
     Config.cpp
+    ProgramLock.cpp
 )
 
 add_executable(ArchiveFiles ${SOURCES})

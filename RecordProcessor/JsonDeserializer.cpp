@@ -30,23 +30,23 @@ inline json JsonDeserializer::process(std::string in)
     return extracted;
 };
 
-void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, 
+void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> sourceQueue, 
                               std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue)
 {
     _thread = std::thread([this, sourceQueue, sinkQueue]()
     {
         std::cout << "Starting processing messages\n";
 
-        std::string message;
+        Record message;
         while (!_stopFlag)
         {
             if (sourceQueue->pop(message))
             {
-                if (message == "EOF") {
+                if (message.data == "EOF" && message.checkpoint == -1) {
                     break;
                 }
 
-                json processedMessage = process(message);
+                json processedMessage = process(message.data);
                 
                 while (!sinkQueue->push(std::move(processedMessage)))
                 {

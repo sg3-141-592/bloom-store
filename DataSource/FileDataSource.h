@@ -11,12 +11,11 @@ class FileDataSource : public DataSource {
 private:
     std::ifstream file;
     std::string _filename;
-    std::shared_ptr<boost::lockfree::spsc_queue<std::string>> _queue;
+    std::shared_ptr<boost::lockfree::spsc_queue<Record>> _queue;
     std::thread _thread;
 public:
     FileDataSource(std::string filename);
-    std::optional<std::string> readNext();
-    void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> queue);
+    void start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue);
     ~FileDataSource();
     void stop();
 };

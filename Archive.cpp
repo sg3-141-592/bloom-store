@@ -22,7 +22,7 @@ int main()
 
     // Load config on start-up
     Config config;
-    
+
     std::shared_ptr<FileDataSource> fileSource = std::make_shared<FileDataSource>(config.sourceConfig.Path);
     std::shared_ptr<JsonDeserializer> deserializer = std::make_shared<JsonDeserializer>();
     std::shared_ptr<FolderDataSink> folderSink = std::make_shared<FolderDataSink>(get_path_func);
@@ -32,8 +32,6 @@ int main()
     pipeline->addProcessor<std::string, json>(deserializer);
 
     pipeline->process();
-
-    // Wait for processors to finish
 
     return 0;
 }
