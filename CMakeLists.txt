@@ -54,6 +54,7 @@ FetchContent_MakeAvailable(googletest)
 set(SOURCES
     DataSource/FileDataSource.cpp
     DataSink/FolderDataSink.cpp
+    DataSink/CompressBundle.cpp
     RecordProcessor/JsonDeserializer.cpp
     DataPipeline.cpp
     Archive.cpp
@@ -69,7 +70,7 @@ target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZL
 # -------------------------------------------------------
 # Searching
 # -------------------------------------------------------
-add_executable(Search Search.cpp Config.cpp)
+add_executable(Search Search.cpp Config.cpp DataSink/CompressBundle.cpp)
 
 target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
 

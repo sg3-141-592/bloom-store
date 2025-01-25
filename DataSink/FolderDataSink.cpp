@@ -1,6 +1,6 @@
 #include "FolderDataSink.h"
 
-#include "CompressBundle.hpp"
+#include "CompressBundle.h"
 
 #include <filesystem>
 #include <iostream>

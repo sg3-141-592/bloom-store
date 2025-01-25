@@ -2,6 +2,9 @@
 Libraries
 https://github.com/jvirkki/libbloom/blob/master/bloom.h
 
+du -sh archive/
+find archive/ -type f \( -name "*.bloom" -o -name "*.json.gz" \) -exec du -ch {} + | grep $total
+
 pstree 498333 --thread-names
 pidstat -p 498333 1
 htop --pid 498333

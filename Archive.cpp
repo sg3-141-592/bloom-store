@@ -22,8 +22,7 @@ int main()
 
     // Load config on start-up
     Config config;
-
-    // /home/sean/bloom-filter-store/build/dataset/mbdump/artist
+    
     std::shared_ptr<FileDataSource> fileSource = std::make_shared<FileDataSource>(config.sourceConfig.Path);
     std::shared_ptr<JsonDeserializer> deserializer = std::make_shared<JsonDeserializer>();
     std::shared_ptr<FolderDataSink> folderSink = std::make_shared<FolderDataSink>(get_path_func);
