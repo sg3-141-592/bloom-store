@@ -5,24 +5,24 @@
 #include <filesystem>
 #include <iostream>
 
-FolderDataSink::FolderDataSink(std::function<std::string(json)> getPathFunc)
+FolderDataSink::FolderDataSink(std::function<std::string(std::string)> getPathFunc)
 {
     _getPathFunc = getPathFunc;
 }
 
 bool FolderDataSink::writeNext(json in)
 {
-    std::filesystem::path dir = std::filesystem::path(_getPathFunc(in)).parent_path();
+    std::filesystem::path dir = std::filesystem::path(_getPathFunc(in["name"])).parent_path();
     if (!std::filesystem::exists(dir))
     {
         std::filesystem::create_directories(dir);
     }
 
-    const std::string path = _getPathFunc(in);
+    const std::string path = _getPathFunc(in["name"]);
 
     // Extract index value from the json object and insert it into the bloom filter
     // _pathToHook[path].filter.insert(in["id"]);
-    std::cout << "Inserting " << in["name"].get<std::string>() << " into bloom filter" << std::endl;
+    // std::cout << "Inserting " << in["name"].get<std::string>() << " into bloom filter" << std::endl;
     bloom_add(&_pathToHook[path].bloomFilter, in["name"].get<std::string>().c_str(), in["name"].get<std::string>().length());
     // _pathToHook[path].bloomFilter.insert(in["id"].get<int>());
 
@@ -38,7 +38,7 @@ bool FolderDataSink::writeNext(json in)
         // Write the buffer to the file
         writeStringToGzipFile(_pathToHook[path].buffer, path + std::to_string(_pathToHook[path].bundleId) + ".json.gz");
 
-        bloom_save(&_pathToHook[path].bloomFilter, const_cast<char*>((path + std::to_string(_pathToHook[path].bundleId) + ".bloom").c_str()));
+        bloom_save(&_pathToHook[path].bloomFilter, const_cast<char *>((path + std::to_string(_pathToHook[path].bundleId) + ".bloom").c_str()));
         bloom_reset(&_pathToHook[path].bloomFilter);
     }
 

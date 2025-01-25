@@ -6,8 +6,7 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-std::string get_path_func(json in) {
-    std::string name = in["name"];
+std::string get_path_func(std::string name) {
     if (!name.empty()) {
         char first_char = std::tolower(name[0]);
         if(isalnum(first_char)) {

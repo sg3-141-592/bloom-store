@@ -15,8 +15,9 @@ int main()
     // Load config on start-up
     Config config;
 
-    std::shared_ptr<FileDataSource> fileSource = std::make_shared<FileDataSource>("./artists.json");
-
+    // ./artists.json
+    std::shared_ptr<FileDataSource> fileSource = std::make_shared<FileDataSource>("/home/sean/bloom-filter-store/build/dataset/mbdump/artist");
+    
     auto sourceToProcessorQueue = std::make_shared<boost::lockfree::spsc_queue<std::string>>(config.generalConfig.QueueSize);
     auto processorToSinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(config.generalConfig.QueueSize);
 
