@@ -8,11 +8,13 @@ using json = nlohmann::json;
 
 #include <boost/lockfree/spsc_queue.hpp>
 
+#include "../Utilities/TSQueue.h"
+
 class DataSink {
 public:
     virtual bool writeNext(json in) = 0;
     virtual ~DataSink() = default;
-    virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<json>> queue) = 0;
+    virtual void start(std::shared_ptr<TSQueue<json>> queue) = 0;
     virtual bool isCompleted() { return completed; };
     virtual void stop() = 0;
 protected:

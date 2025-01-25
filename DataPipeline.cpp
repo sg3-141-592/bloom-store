@@ -23,7 +23,7 @@ void DataPipeline::process()
     _source->start(sourceToProcessorQueue);
 
     // Setup Sink
-    auto processorToSinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(_config.generalConfig.QueueSize);
+    auto processorToSinkQueue = std::make_shared<TSQueue<json>>(_config.generalConfig.QueueSize);
     _sink->start(processorToSinkQueue);
 
     // Start the processors

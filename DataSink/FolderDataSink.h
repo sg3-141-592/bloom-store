@@ -39,7 +39,7 @@ class FolderDataSink : public DataSink
 public:
     FolderDataSink(std::function<std::string(std::string)> getPathFunc);
     bool writeNext(json in);
-    void start(std::shared_ptr<boost::lockfree::spsc_queue<json>> queue);
+    void start(std::shared_ptr<TSQueue<json>> queue);
     ~FolderDataSink();
     void stop();
 

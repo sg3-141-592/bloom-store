@@ -32,4 +32,8 @@ valgrind --tool=callgrind ./ArchiveFiles
 /usr/bin/kcachegrind
 
 (?<timestamp>[0-9\:]+)\, (?<area>[A-Za-z]+) messages\/sec\: (?<messages_sec>[0-9]+)\, Total messages\: (?<total_messages>[0-9]+)
+
+Threads|Time
+1      |43.166
+2      |(Not working at the moment :\)
 ```

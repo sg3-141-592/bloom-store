@@ -46,7 +46,7 @@ bool FolderDataSink::writeNext(json in)
     return true;
 }
 
-void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> queue)
+void FolderDataSink::start(std::shared_ptr<TSQueue<json>> queue)
 {
     _thread = std::thread([this, queue]()
                           {
@@ -54,14 +54,13 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
 
         json sa;
         while (_stopFlag == false) {
-            if (queue->pop(sa)) {
-                if (sa.empty()) {  // Use empty() instead of comparing to empty object
-                    break;
-                }
-                writeNext(std::move(sa));  // Use move semantics
-                _metricsTracker->recordMessage();
-                _metricsTracker->printMetricsIfNeeded();
+            sa = queue->pop();
+            if (sa.empty()) {  // Use empty() instead of comparing to empty object
+                break;
             }
+            writeNext(std::move(sa));  // Use move semantics
+            _metricsTracker->recordMessage();
+            _metricsTracker->printMetricsIfNeeded();
         }
 
         // Finish writing all of the files    

@@ -24,12 +24,12 @@ int main()
     Config config;
 
     std::shared_ptr<FileDataSource> fileSource = std::make_shared<FileDataSource>(config.sourceConfig.Path);
-    std::shared_ptr<JsonDeserializer> deserializer = std::make_shared<JsonDeserializer>();
     std::shared_ptr<FolderDataSink> folderSink = std::make_shared<FolderDataSink>(get_path_func);
 
     pipeline = new DataPipeline(fileSource, folderSink, config);
 
-    pipeline->addProcessor<std::string, json>(deserializer);
+    pipeline->addProcessor<std::string, json>(std::make_shared<JsonDeserializer>());
+    pipeline->addProcessor<std::string, json>(std::make_shared<JsonDeserializer>());
 
     pipeline->process();
 

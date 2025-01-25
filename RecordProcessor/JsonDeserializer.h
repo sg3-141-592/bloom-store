@@ -14,7 +14,7 @@ private:
 public:
     JsonDeserializer();
     json process(std::string in);
-    void start(std::shared_ptr<TSQueue<Record>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue);
+    void start(std::shared_ptr<TSQueue<Record>> sourceQueue, std::shared_ptr<TSQueue<json>> sinkQueue);
     void stop();
     ~JsonDeserializer();
 };

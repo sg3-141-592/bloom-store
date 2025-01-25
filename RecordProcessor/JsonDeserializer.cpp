@@ -44,7 +44,7 @@ inline json JsonDeserializer::process(std::string in)
 };
 
 void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
-                             std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue)
+                             std::shared_ptr<TSQueue<json>> sinkQueue)
 {
     _thread = std::thread([this, sourceQueue, sinkQueue]()
                           {
@@ -60,7 +60,7 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
 
             json processedMessage = process(message.data);
             
-            while (!sinkQueue->push(std::move(processedMessage)))
+            while (!sinkQueue->try_push(std::move(processedMessage)))
             {
                 std::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
