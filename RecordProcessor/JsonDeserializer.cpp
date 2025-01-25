@@ -3,6 +3,7 @@
 #include <iostream>
 
 JsonDeserializer::JsonDeserializer() {
+    _metricsTracker = new MetricsTracker("JsonDeserializer");
 };
 
 inline json JsonDeserializer::process(std::string in)
@@ -54,6 +55,9 @@ void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
             }
+
+            _metricsTracker->recordMessage();
+            _metricsTracker->printMetricsIfNeeded();
         }
         sinkQueue->push(json::object());
 

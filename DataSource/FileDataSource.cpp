@@ -5,8 +5,8 @@
 #define SLEEP_TIME 100 // how long to sleep when queues are full
 
 FileDataSource::FileDataSource(std::string filename) {
-    // TODO: Get rid of this unnecessary copy
-    _filename = filename;
+    _filename = filename; // TODO: Get rid of this unnecessary copy (std::move)
+    _metricsTracker = new MetricsTracker("FileDataSource");
 };
 
 void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue) {
@@ -28,8 +28,13 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> 
                     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
                 }
             }
+
+            _metricsTracker->recordMessage();
+            _metricsTracker->printMetricsIfNeeded();
         }
-        queue->push(Record{ nextline, -1 });
+
+        // Push EOF to terminate the queue
+        queue->push(Record{ "EOF", -1 });
 
         std::cout << "Finished loading messages\n";
 

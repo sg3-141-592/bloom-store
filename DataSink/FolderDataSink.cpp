@@ -8,6 +8,7 @@
 FolderDataSink::FolderDataSink(std::function<std::string(std::string)> getPathFunc)
 {
     _getPathFunc = getPathFunc;
+    _metricsTracker = new MetricsTracker("FolderDataSink");
 }
 
 bool FolderDataSink::writeNext(json in)
@@ -58,6 +59,8 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
                     break;
                 }
                 writeNext(std::move(sa));  // Use move semantics
+                _metricsTracker->recordMessage();
+                _metricsTracker->printMetricsIfNeeded();
             }
         }
 

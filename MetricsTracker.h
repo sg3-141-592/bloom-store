@@ -1,16 +1,21 @@
+#pragma once
+
 #include <atomic>
 #include <chrono>
 #include <mutex>
 #include <iostream>
+#include <iomanip>
 
-class ThreadMetricsTracker {
+class MetricsTracker {
 private:
+    std::string name;
     std::atomic<uint64_t> messageCount{0};
     std::atomic<uint64_t> lastSecondMessageCount{0};
     std::chrono::steady_clock::time_point lastMetricReset;
     std::mutex printMutex;
 
 public:
+    MetricsTracker(std::string name) : name(name) {}
     void recordMessage() {
         messageCount++;
         lastSecondMessageCount++;
@@ -22,8 +27,12 @@ public:
         
         if (elapsed.count() >= 1) {
             std::lock_guard<std::mutex> lock(printMutex);
-            std::cout << "Messages/sec: " << lastSecondMessageCount 
-                      << ", Total messages: " << messageCount << std::endl;
+            auto now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            // std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ", " 
+            //           << name << " messages/sec: " << lastSecondMessageCount 
+            //           << ", Total messages: " << messageCount << std::endl;
+            std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ","
+                      << name << "," << lastSecondMessageCount << "," << messageCount << std::endl;
             
             lastSecondMessageCount = 0;
             lastMetricReset = now;

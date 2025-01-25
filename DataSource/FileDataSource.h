@@ -1,11 +1,12 @@
 #pragma once
 
-#include "DataSource.h"
-
 #include <fstream>
 #include <optional>
 #include <string>
 #include <thread>
+
+#include "DataSource.h"
+#include "../MetricsTracker.h"
 
 class FileDataSource : public DataSource {
 private:
@@ -13,6 +14,7 @@ private:
     std::string _filename;
     std::shared_ptr<boost::lockfree::spsc_queue<Record>> _queue;
     std::thread _thread;
+    MetricsTracker* _metricsTracker;
 public:
     FileDataSource(std::string filename);
     void start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue);

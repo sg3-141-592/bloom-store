@@ -9,9 +9,9 @@
 #include <string>
 #include <thread>
 
-#include "bloom_filter.hpp"
-
 #include "bloom.h"
+
+#include "../MetricsTracker.h"
 
 struct FolderData
 {
@@ -48,4 +48,5 @@ private:
     std::map<std::string, FolderData> _pathToHook;
     std::thread _thread;
     const int BUNDLE_SIZE = 1000;
+    MetricsTracker* _metricsTracker;
 };
