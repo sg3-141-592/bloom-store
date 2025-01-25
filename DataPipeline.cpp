@@ -8,41 +8,29 @@
 
 #include <boost/lockfree/spsc_queue.hpp>
 
-DataPipeline::DataPipeline(std::shared_ptr<DataSource> source, std::shared_ptr<DataSink> sink)
+DataPipeline::DataPipeline(std::shared_ptr<DataSource> source, std::shared_ptr<DataSink> sink, Config config)
 {
     _source = source;
     _sink = sink;
+    _config = config;
 };
 
 void DataPipeline::process()
 {
-    // Setup a queue for the source to processor
-    auto sourceToProcessorQueue = std::make_shared<boost::lockfree::spsc_queue<std::string>>(1024);
-
-    // Create the Source
+    // Setup Source
+    auto sourceToProcessorQueue = std::make_shared<boost::lockfree::spsc_queue<std::string>>(_config.generalConfig.QueueSize);
     _source->start(sourceToProcessorQueue);
 
-    // Start the processors
-    // for (const auto &processor : _processors)
-    // {
-    //     // TODO: This will have to change in future to build the queues it needs to on the fly
-    //     processor->start(sourceToProcessorQueue);
-    // }
+    // Setup Sink
+    auto processorToSinkQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(_config.generalConfig.QueueSize);
+    _sink->start(processorToSinkQueue);
 
-    //
-    std::optional<std::string> line;
-    while ((line = _source->readNext()))
+    // Start the processors
+    // auto nextQueue = std::make_shared<boost::lockfree::spsc_queue<json>>(1024);
+    for (const auto &processor : _processors)
     {
-        std::string result;
-        sourceToProcessorQueue->consume_one([&result](const std::string &data)
-                                            { result = data; });
-        // for (const auto &processor : _processors)
-        // {
-        //     if (processor->getInstanceType() == typeid(JsonDeserializer))
-        //     {
-        //         auto castedProcessor = dynamic_cast<JsonDeserializer *>(processor.get());
-        //         _sink->writeNext(castedProcessor->process(*line));
-        //     }
-        // }
+        
+        // TODO: This will have to change in future to build the queues it needs to on the fly
+        processor->start(sourceToProcessorQueue, processorToSinkQueue);
     }
 };

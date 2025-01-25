@@ -57,6 +57,7 @@ set(SOURCES
     RecordProcessor/JsonDeserializer.cpp
     DataPipeline.cpp
     Archive.cpp
+    Config.cpp
 )
 
 add_executable(ArchiveFiles ${SOURCES})
@@ -68,7 +69,7 @@ target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZL
 # -------------------------------------------------------
 # Searching
 # -------------------------------------------------------
-add_executable(Search Search.cpp)
+add_executable(Search Search.cpp Config.cpp)
 
 target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
 

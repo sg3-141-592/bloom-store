@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <typeinfo>
 
 #include <nlohmann/json.hpp>
@@ -23,5 +24,6 @@ public:
     };
     void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) override {
         // Needed otherwise the derived classes would think they're abstract
+        std::cout << "Don't call this :(\n";
     };
 };

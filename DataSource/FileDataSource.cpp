@@ -9,9 +9,7 @@ FileDataSource::FileDataSource(std::string filename) {
 std::optional<std::string> FileDataSource::readNext() {
     std::string sa;
     if (getline(file, sa)) {
-        // Push value to the queue
         _queue->push(sa);
-        //
         return sa;
     } else {
         return std::nullopt;

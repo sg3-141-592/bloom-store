@@ -7,7 +7,7 @@ namespace fs = std::filesystem;
 
 #include "bloom.h"
 
-#include "config.hpp"
+#include "Config.h"
 
 int main()
 {
