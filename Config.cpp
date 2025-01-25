@@ -26,4 +26,5 @@ Config::Config()
     boost::property_tree::ini_parser::read_ini("config.ini", pt);
 
     generalConfig.QueueSize = pt.get<int>("General.queue_size");
+    sourceConfig.Path = pt.get<std::string>("Source.path");
 };

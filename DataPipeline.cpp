@@ -33,4 +33,16 @@ void DataPipeline::process()
         // TODO: This will have to change in future to build the queues it needs to on the fly
         processor->start(sourceToProcessorQueue, processorToSinkQueue);
     }
+
+    // Wait for source, sink and processors to finish
+    bool completed = false;
+    while (!completed)
+    {
+        completed = _source->isCompleted() && _sink->isCompleted();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        for (const auto &processor : _processors)
+        {
+            completed = completed && processor->isCompleted();
+        }
+    }
 };

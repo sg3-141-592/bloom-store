@@ -41,6 +41,8 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<std::stri
         std::cout << "Finished loading messages\n";
 
         infile.close();
+
+        completed = true;
     });
 }
 

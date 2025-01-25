@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <iostream>
 #include <typeinfo>
 
@@ -12,7 +13,10 @@ class AbstractProcessor {
 public:
     virtual ~AbstractProcessor() = default; // Virtual destructor
     virtual void process() = 0; // Pure virtual function
-    virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) = 0; // Pure virtual function
+    virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) = 0;
+    virtual bool isCompleted() { return completed; };
+protected:
+    std::atomic<bool> completed = false;
 };
 
 template<typename InputType, typename OutputType>
@@ -24,6 +28,5 @@ public:
     };
     void start(std::shared_ptr<boost::lockfree::spsc_queue<std::string>> sourceQueue, std::shared_ptr<boost::lockfree::spsc_queue<json>> sinkQueue) override {
         // Needed otherwise the derived classes would think they're abstract
-        std::cout << "Don't call this :(\n";
     };
 };

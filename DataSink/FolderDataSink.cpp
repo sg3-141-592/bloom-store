@@ -70,6 +70,8 @@ void FolderDataSink::start(std::shared_ptr<boost::lockfree::spsc_queue<json>> qu
         }
 
         std::cout << "Finished writing messages\n"; });
+
+        completed = true;
 }
 
 FolderDataSink::~FolderDataSink()

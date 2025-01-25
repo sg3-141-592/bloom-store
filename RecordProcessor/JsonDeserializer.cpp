@@ -58,6 +58,8 @@ void JsonDeserializer::start(std::shared_ptr<boost::lockfree::spsc_queue<std::st
         sinkQueue->push(json::object());
 
         std::cout << "Finished processing messages\n";
+
+        completed = true;
     }); 
 }
 

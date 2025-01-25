@@ -27,7 +27,7 @@ struct FolderData
         // Initialize the bloom filter
         // TODO: Drive the bloom config off the ini file
         // The bloom filter must at minimum be 1000 in size
-        if(bloom_init2(&bloomFilter, 1000000, 0.01)) {
+        if(bloom_init2(&bloomFilter, 1000, 0.01)) {
             std::cerr << "Failed to initialize bloom filter" << std::endl;
         }
     }
