@@ -16,6 +16,16 @@ time grep "Green Day" artist | jq '.type + " " + .name'een Day" artist | jq '.ty
 head big_artists.json -n 10000 > artists.json 
 rm -rf archive/*
 
+LLVM_PROFILE_FILE="test_%p.profraw" ./test_archive_files
+llvm-profdata merge -o coverage.profdata *.profraw
+llvm-cov show ./test_archive_files \
+    -instr-profile=coverage.profdata \
+    -output-dir=coverage_report \
+    -format=html \
+    -ignore-filename-regex="_deps/*"
+python -m http.server
+
+clang-tidy -checks=bugprone-\*,modernize-\*,performance-\*,readability-\* --dump-config > .clang-tidy
 clang-tidy --checks=* -p build Archive.cpp
 
 valgrind --tool=callgrind ./ArchiveFiles 

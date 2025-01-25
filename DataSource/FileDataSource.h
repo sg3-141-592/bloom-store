@@ -14,7 +14,7 @@ private:
     std::shared_ptr<boost::lockfree::spsc_queue<Record>> _queue;
     std::thread _thread;
 public:
-    FileDataSource(std::string filename);
+    FileDataSource(std::string&& filename);
     void start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue);
     ~FileDataSource();
     void stop();

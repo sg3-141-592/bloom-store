@@ -4,7 +4,7 @@ project(IlmBloomStore VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 include(FetchContent)
 
@@ -85,6 +85,9 @@ add_executable(
     tests/Test_JsonDeserializer.cpp
     RecordProcessor/JsonDeserializer.cpp
 )
+
+target_compile_options(test_archive_files PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+target_link_options(test_archive_files PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 
 target_link_libraries(
     test_archive_files

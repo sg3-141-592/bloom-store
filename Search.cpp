@@ -15,7 +15,7 @@ using json = nlohmann::json;
 
 int main()
 {
-    std::string testString("Shark Island");
+    std::string testString("Tracy Chapman");
 
     // Find the path for search term
     std::string path = get_path_func(testString);

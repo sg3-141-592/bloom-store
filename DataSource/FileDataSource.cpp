@@ -2,8 +2,10 @@
 
 #include <iostream>
 
-FileDataSource::FileDataSource(std::string filename) {
-    _filename = filename;
+#define SLEEP_TIME 100 // how long to sleep when queues are full
+
+FileDataSource::FileDataSource(std::string&& filename) {
+    _filename = std::move(filename);
 };
 
 void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue) {
@@ -11,22 +13,22 @@ void FileDataSource::start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> 
         std::cout << "Starting loading messages\n";
 
         std::ifstream infile(_filename);
-        std::string sa;
-        while (getline(infile, sa) && !_stopFlag) {
+        std::string nextline;
+        while (getline(infile, nextline) && !_stopFlag) {
 
             // Get a checkpoint for the file
             std::streampos checkpoint = infile.tellg();
             
             // Push value to the queue
-            if(!queue->push(Record{ sa, checkpoint })) {
+            if(!queue->push(Record{ nextline, checkpoint })) {
                 // If can't push to the queue, then pause and try again
-                while (!queue->push(Record{ sa, checkpoint })) {
+                while (!queue->push(Record{ nextline, checkpoint })) {
                     std::this_thread::yield();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
                 }
             }
         }
-        queue->push(Record{ sa, -1 });
+        queue->push(Record{ nextline, -1 });
 
         std::cout << "Finished loading messages\n";
 

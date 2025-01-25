@@ -8,13 +8,15 @@
 
 #include "../CommonData.h"
 
-class DataSource {
+class DataSource
+{
 public:
-    virtual ~DataSource() = default;
     virtual void start(std::shared_ptr<boost::lockfree::spsc_queue<Record>> queue) = 0;
-    virtual bool isCompleted() { return completed.load(); };
+    virtual bool isCompleted() { return _completed.load(); };
     virtual void stop() = 0;
+    virtual ~DataSource() = default;
+
 protected:
-    std::atomic<bool> completed = false;
-    std::atomic<bool> _stopFlag{false}; // Used for handling cancelling processing
+    std::atomic<bool> _completed{false};
+    std::atomic<bool> _stopFlag{false};
 };
