@@ -50,12 +50,23 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
         break;
       }
 
-      json processedMessage = process(std::move(message.data));
+      // This process can throw so we print the output for debugging
+      std::string data_copy;
+      try {
+        data_copy = message.data; // Make a copy for error reporting
+        json processedMessage = process(std::move(message.data));
 
-      while (!sinkQueue->try_push(
-          JsonRecord{std::move(processedMessage), message.checkpoint})) {
-        std::this_thread::yield();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        while (!sinkQueue->try_push(
+            JsonRecord{std::move(processedMessage), message.checkpoint})) {
+          std::this_thread::yield();
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+      } catch (const json::exception &e) {
+        std::cerr << "Cannot process: " << data_copy << " - Error: " << e.what()
+                  << std::endl;
+      } catch (...) {
+        std::cerr << "Cannot process: " << data_copy << " - Unknown error"
+                  << std::endl;
       }
 
       _metricsTracker->recordMessage();

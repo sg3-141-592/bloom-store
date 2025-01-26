@@ -7,8 +7,7 @@ bool writeStringToGzipFile(const std::string &inputString,
     throw std::runtime_error("Cannot open output gzip file");
   }
 
-  size_t bytesWritten =
-      gzwrite(outputFile, inputString.c_str(), inputString.length());
+  size_t bytesWritten = gzwrite(outputFile, inputString.c_str(), static_cast<unsigned int>(inputString.length()));
   gzclose(outputFile);
 
   return bytesWritten == inputString.length();
@@ -25,7 +24,7 @@ std::string readGzipFileToString(const std::string &inputGzPath) {
   int bytesRead;
 
   while ((bytesRead = gzread(inputFile, buffer, sizeof(buffer))) > 0) {
-    result.append(buffer, bytesRead);
+    result.append(buffer, static_cast<std::string::size_type>(bytesRead));
   }
 
   gzclose(inputFile);

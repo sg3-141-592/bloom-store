@@ -74,7 +74,7 @@ void FolderDataSink::start(std::shared_ptr<TSQueue<JsonRecord>> queue) {
     while (!_stopFlag) {
       itemIn = queue->pop();
       if (itemIn.data
-              .empty()) { // Use empty() instead of comparing to empty object
+              .empty() && itemIn.checkpoint == -1) { // Use empty() instead of comparing to empty object
         break;
       }
       writeNext(std::move(itemIn.data)); // Use move semantics

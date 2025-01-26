@@ -5,24 +5,24 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE Debug)
-# if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#     add_compile_options(
-#         -Wall
-#         -Wextra
-#         -Wpedantic
-#         -Wshadow
-#         -Wnon-virtual-dtor
-#         -Wold-style-cast
-#         -Wcast-align
-#         -Wunused
-#         -Woverloaded-virtual
-#         -Wconversion
-#         -Wsign-conversion
-#         -Wnull-dereference
-#         -Wdouble-promotion
-#         -Wformat=2
-#     )
-# endif()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wnon-virtual-dtor
+        -Wold-style-cast
+        -Wcast-align
+        -Wunused
+        -Woverloaded-virtual
+        -Wconversion
+        -Wsign-conversion
+        -Wnull-dereference
+        -Wdouble-promotion
+        -Wformat=2
+    )
+endif()
 
 include(FetchContent)
 

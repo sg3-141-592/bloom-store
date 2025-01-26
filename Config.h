@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 
 typedef std::function<std::string(std::string, std::string)> getPathFuncType;
