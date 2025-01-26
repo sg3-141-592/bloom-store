@@ -4,15 +4,29 @@
 
 std::string get_path_func(std::string name);
 
-class Config {
+struct GeneralConfig
+{
+    int QueueSize = 1024;
+};
+
+struct SourceConfig
+{
+    std::string Path;
+};
+
+struct SinkConfig
+{
+    int NumberItemsPerBundle = 1000;
+    float BloomFalsePositiveProbability = 0.01f;
+};
+
+class Config
+{
 public:
-    Config();
+    Config() : Config("config.ini") {}
+    Config(std::string path);
 
-    struct GeneralConfig {
-        int QueueSize = 1024;
-    } generalConfig;
-
-    struct SourceConfig {
-        std::string Path;
-    } sourceConfig;
+    GeneralConfig generalConfig;
+    SourceConfig sourceConfig;
+    SinkConfig sinkConfig;
 };

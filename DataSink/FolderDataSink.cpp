@@ -11,23 +11,20 @@ FolderDataSink::FolderDataSink(std::function<std::string(std::string)> getPathFu
     _metricsTracker = new MetricsTracker("FolderDataSink");
 }
 
-bool FolderDataSink::writeNext(json in)
+auto FolderDataSink::writeNext(json itemIn) -> bool
 {
-    std::filesystem::path dir = std::filesystem::path(_getPathFunc(in["name"])).parent_path();
+    std::filesystem::path dir = std::filesystem::path(_getPathFunc(itemIn["name"])).parent_path();
     if (!std::filesystem::exists(dir))
     {
         std::filesystem::create_directories(dir);
     }
 
-    const std::string path = _getPathFunc(in["name"]);
+    const std::string path = _getPathFunc(itemIn["name"]);
 
     // Extract index value from the json object and insert it into the bloom filter
-    // _pathToHook[path].filter.insert(in["id"]);
-    // std::cout << "Inserting " << in["name"].get<std::string>() << " into bloom filter" << std::endl;
-    bloom_add(&_pathToHook[path].bloomFilter, in["name"].get<std::string>().c_str(), in["name"].get<std::string>().length());
-    // _pathToHook[path].bloomFilter.insert(in["id"].get<int>());
+    bloom_add(&_pathToHook[path].bloomFilter, itemIn["name"].get<std::string>().c_str(), itemIn["name"].get<std::string>().length());
 
-    _pathToHook[path].buffer.append(in.dump() + "\n");
+    _pathToHook[path].buffer.append(itemIn.dump() + "\n");
     _pathToHook[path].recordCount++;
 
     // Check if we should move to the next bundle
@@ -52,13 +49,13 @@ void FolderDataSink::start(std::shared_ptr<TSQueue<json>> queue)
                           {
         std::cout << "Starting writing messages\n";
 
-        json sa;
-        while (_stopFlag == false) {
-            sa = queue->pop();
-            if (sa.empty()) {  // Use empty() instead of comparing to empty object
+        json itemIn;
+        while (!_stopFlag) {
+            itemIn = queue->pop();
+            if (itemIn.empty()) {  // Use empty() instead of comparing to empty object
                 break;
             }
-            writeNext(std::move(sa));  // Use move semantics
+            writeNext(std::move(itemIn));  // Use move semantics
             _metricsTracker->recordMessage();
             _metricsTracker->printMetricsIfNeeded();
         }
@@ -67,8 +64,6 @@ void FolderDataSink::start(std::shared_ptr<TSQueue<json>> queue)
         for (auto& [path, hook] : _pathToHook) {
             writeStringToGzipFile(hook.buffer, path + std::to_string(hook.bundleId) + ".json.gz");
             bloom_save(&hook.bloomFilter, const_cast<char*>((path + std::to_string(hook.bundleId) + ".bloom").c_str()));
-            bloom_reset(&hook.bloomFilter);
-            bloom_free(&hook.bloomFilter);
         }
 
         std::cout << "Finished writing messages\n"; });

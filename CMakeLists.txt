@@ -80,10 +80,13 @@ target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB lib
 # -------------------------------------------------------
 enable_testing()
 
+file(GLOB TEST_SOURCES tests/Test_*.cpp)
+
 add_executable(
     test_archive_files
-    tests/Test_JsonDeserializer.cpp
+    ${TEST_SOURCES}
     RecordProcessor/JsonDeserializer.cpp
+    Config.cpp
 )
 
 target_compile_options(test_archive_files PRIVATE -fprofile-instr-generate -fcoverage-mapping)
