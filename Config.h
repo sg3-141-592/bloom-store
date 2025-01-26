@@ -7,6 +7,7 @@ std::string get_path_func(std::string name);
 struct GeneralConfig
 {
     int QueueSize = 1024;
+    int NumberProcessingThreads = 1;
 };
 
 struct SourceConfig

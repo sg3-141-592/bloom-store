@@ -23,8 +23,10 @@ llvm-cov show ./test_archive_files \
     -instr-profile=coverage.profdata \
     -output-dir=coverage_report \
     -format=html \
-    -ignore-filename-regex="_deps/*"
+    -ignore-filename-regex="_deps/.*|tests/.*"
 python -m http.server
+
+clang-format Archive.cpp -i
 
 clang-tidy -checks=bugprone-\*,modernize-\*,performance-\*,readability-\* --dump-config > .clang-tidy
 clang-tidy --checks=* -p build Archive.cpp

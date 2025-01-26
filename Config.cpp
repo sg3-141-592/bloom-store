@@ -47,6 +47,7 @@ Config::Config(std::string path)
     boost::property_tree::ini_parser::read_ini(path, pt);
 
     generalConfig.QueueSize = getOptionalConfigValue<int>(pt, "General.queue_size", generalConfig.QueueSize);
+    generalConfig.NumberProcessingThreads = getOptionalConfigValue<int>(pt, "General.number_processing_threads", generalConfig.NumberProcessingThreads);
     sourceConfig.Path = getMandatoryConfigValue<std::string>(pt, "Source.path");
     sinkConfig.NumberItemsPerBundle = getOptionalConfigValue<int>(pt, "Sink.number_items_per_bundle", sinkConfig.NumberItemsPerBundle);
     sinkConfig.BloomFalsePositiveProbability = getOptionalConfigValue<float>(pt, "Sink.bloom_false_positive_probability", sinkConfig.BloomFalsePositiveProbability);

@@ -9,6 +9,7 @@
 #include "../DataSink/FolderDataSink.h"
 #include "../RecordProcessor/JsonDeserializer.h"
 #include "../Utilities/TSQueue.h"
+#include "../Search/SearchRecords.h"
 
 class IntegrationTest : public testing::Test
 {
@@ -40,7 +41,7 @@ TEST_F(IntegrationTest, SmallFile)
     std::vector<std::string> BandNames = {"Green Day", "The Beatles", "The Rolling Stones", "The Who", "The Doors"};
     for (auto &bandName : BandNames)
     {
-        std::cout << "Checking for band: " << bandName << std::endl;
+        SearchRecords(bandName);
     }
     
 }

@@ -26,10 +26,10 @@ void DataPipeline::process()
     auto processorToSinkQueue = std::make_shared<TSQueue<Record<json, std::streampos>>>(_config.generalConfig.QueueSize);
     _sink->start(processorToSinkQueue);
 
-    // Start the processors
-    for (const auto &processor : _processors)
-    {
-        processor->start(sourceToProcessorQueue, processorToSinkQueue);
+    // Start the specified number of thread processors
+    for(int i = 0;i < _config.generalConfig.NumberProcessingThreads;i++) {
+        _processors[0]->start(sourceToProcessorQueue, processorToSinkQueue);
+
     }
 
     // Wait for source, sink and processors to finish

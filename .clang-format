@@ -1,0 +1,11 @@
+BasedOnStyle: LLVM
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex:    '^"(stdafx|PrecompiledHeader)'
+    Priority: -2
+  - Regex:    '^"(llvm|llvm-c)'
+    Priority: 4
+  - Regex:    '^(<|"(gtest|isl|json)/)'
+    Priority: 3
+  - Regex:    '.*'
+    Priority: 2
