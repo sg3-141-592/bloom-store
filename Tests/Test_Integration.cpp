@@ -31,7 +31,7 @@ TEST_F(IntegrationTest, SmallFile)
     auto testConfig = std::make_shared<Config>();
     auto pipeline = new DataPipeline(
         std::make_shared<FileDataSource>(testConfig),
-        std::make_shared<FolderDataSink>(get_path_func),
+        std::make_shared<FolderDataSink>(get_path_func, testConfig),
         testConfig
     );
     
@@ -40,7 +40,7 @@ TEST_F(IntegrationTest, SmallFile)
     std::vector<std::string> BandNames = {"Rados", "Power Tool"};
     for (auto &bandName : BandNames)
     {
-        auto results = SearchRecords(bandName);
+        auto results = SearchRecords(bandName, "");
         ASSERT_EQ(results.size(), 1);
     }
     

@@ -1,12 +1,12 @@
 #include <fstream>
 #include <string>
 
-class Checkpoint
-{   
+class Checkpoint {
 public:
-    Checkpoint(const std::string &filename);
-    ~Checkpoint();
+  Checkpoint(const std::string &filename);
+  ~Checkpoint();
+
 private:
-    std::ifstream _checkpointFile;
-    int _fileLockDescriptor;
+  std::ifstream _checkpointFile;
+  int _fileLockDescriptor;
 };

@@ -18,7 +18,8 @@ void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
 
     std::ifstream infile(_config->sourceConfig.Path);
     if (!infile.is_open()) {
-      std::cerr << "Failed to open file: " << _config->sourceConfig.Path << std::endl;
+      std::cerr << "Failed to open file: " << _config->sourceConfig.Path
+                << std::endl;
       return;
     }
 

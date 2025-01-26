@@ -1,6 +1,6 @@
 #include <csignal>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 #include "DataPipeline.h"
 #include "DataSink/FolderDataSink.h"
@@ -26,10 +26,8 @@ int main() {
   // Load default config.ini on start-up
   auto config = std::make_shared<Config>();
 
-  auto fileSource =
-      std::make_shared<FileDataSource>(config);
-  auto folderSink =
-      std::make_shared<FolderDataSink>(get_path_func);
+  auto fileSource = std::make_shared<FileDataSource>(config);
+  auto folderSink = std::make_shared<FolderDataSink>(get_path_func, config);
 
   pipeline = std::make_unique<DataPipeline>(fileSource, folderSink, config);
 
@@ -39,7 +37,7 @@ int main() {
 }
 
 void signalHandler(int signum) {
-  
+
   // Send a signal to the DataProcessor to complete gracefully
   pipeline->stop();
 

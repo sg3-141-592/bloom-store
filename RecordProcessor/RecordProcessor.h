@@ -17,9 +17,8 @@ class AbstractProcessor {
 public:
   virtual ~AbstractProcessor() = default;
   virtual void process() = 0;
-  virtual void start(
-      std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
-      std::shared_ptr<TSQueue<JsonRecord>> sinkQueue) = 0;
+  virtual void start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
+                     std::shared_ptr<TSQueue<JsonRecord>> sinkQueue) = 0;
   virtual bool isCompleted() { return completed; };
   virtual void stop() = 0;
 
@@ -35,10 +34,8 @@ public:
   void process() override{
       // Needed otherwise the derived classes would think they're abstract
   };
-  void start(
-      std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
-      std::shared_ptr<TSQueue<JsonRecord>> sinkQueue)
-      override{
-          // Needed otherwise the derived classes would think they're abstract
-      };
+  void start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
+             std::shared_ptr<TSQueue<JsonRecord>> sinkQueue) override{
+      // Needed otherwise the derived classes would think they're abstract
+  };
 };
