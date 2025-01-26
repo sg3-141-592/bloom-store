@@ -28,11 +28,10 @@ protected:
 TEST_F(IntegrationTest, SmallFile)
 {
     // Push a 5 entry file and check if all of the values can be retrieved
-    Config testConfig;
+    auto testConfig = std::make_shared<Config>();
     auto pipeline = new DataPipeline(
-        std::make_shared<FileDataSource>("./test_files/small.json"),
+        std::make_shared<FileDataSource>(testConfig),
         std::make_shared<FolderDataSink>(get_path_func),
-        std::make_shared<JsonDeserializer>(),
         testConfig
     );
     

@@ -108,7 +108,7 @@ target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB lib
 # -------------------------------------------------------
 enable_testing()
 
-file(GLOB TEST_SOURCES tests/Test_*.cpp)
+file(GLOB TEST_SOURCES Tests/Test_*.cpp)
 
 add_executable(
     test_archive_files

@@ -9,14 +9,14 @@
 
 class DataPipeline {
 public:
-    DataPipeline(std::shared_ptr<DataSource<std::string, std::streampos>> source, std::shared_ptr<DataSink> sink, std::shared_ptr<RecordProcessor<std::string, json>> processor, Config config);
+    DataPipeline(std::shared_ptr<DataSource<std::string, std::streampos>> source, std::shared_ptr<DataSink> sink, std::shared_ptr<Config> config);
     
     void process();
     void stop();
 private:
-    std::shared_ptr<RecordProcessor<std::string, json>> _processor;
+    std::vector<std::shared_ptr<RecordProcessor<std::string, json>>> _processors;
     std::shared_ptr<DataSource<std::string, std::streampos>> _source;
     std::shared_ptr<DataSink> _sink;
-    Config _config;
+    std::shared_ptr<Config> _config;
 };
 

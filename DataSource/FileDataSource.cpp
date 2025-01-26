@@ -8,16 +8,16 @@
 
 #define SLEEP_TIME 100 // how long to sleep when queues are full
 
-FileDataSource::FileDataSource(std::string filename) {
-    _filename = std::move(filename);
+FileDataSource::FileDataSource(std::shared_ptr<Config> config) {
     _metricsTracker = std::make_unique<MetricsTracker>("FileDataSource");
+    _config = config;
 };
 
 void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
     _thread = std::thread ([this, queue]() {
         std::cout << "Starting loading messages\n";
 
-        std::ifstream infile(_filename);
+        std::ifstream infile(_config->sourceConfig.Path);
         if (!infile.is_open()) {
             std::cerr << "Failed to open file: " << _filename << std::endl;
             return;
@@ -43,8 +43,11 @@ void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
         }
 
         // Push EOF to terminate the queue
-        // TODO: Add handling for number of thread for EOF
-        queue->push(StringRecord{ "EOF", -1 });
+        // We have to push one of these for each worker we have
+        for (size_t i = 0; i < _config->generalConfig.NumberProcessingThreads; i++)
+        {
+            queue->push(StringRecord{ "EOF", -1 });
+        }
 
         std::cout << "Finished loading messages\n";
 

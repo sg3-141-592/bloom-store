@@ -8,41 +8,49 @@
 #include <optional>
 #include <typeinfo>
 
-#include <boost/lockfree/spsc_queue.hpp>
-
-DataPipeline::DataPipeline(std::shared_ptr<DataSource<std::string, std::streampos>> source, std::shared_ptr<DataSink> sink, std::shared_ptr<RecordProcessor<std::string, json>> processor, Config config)
+DataPipeline::DataPipeline(std::shared_ptr<DataSource<std::string, std::streampos>> source, std::shared_ptr<DataSink> sink, std::shared_ptr<Config> config)
 {
     _source = source;
     _sink = sink;
-    _processor = processor;
     _config = config;
 };
 
 void DataPipeline::process()
 {
     // Setup Source
-    auto sourceToProcessorQueue = std::make_shared<TSQueue<StringRecord>>(_config.generalConfig.QueueSize);
+    auto sourceToProcessorQueue = std::make_shared<TSQueue<StringRecord>>(_config->generalConfig.QueueSize);
     _source->start(sourceToProcessorQueue);
 
     // Setup Sink
-    auto processorToSinkQueue = std::make_shared<TSQueue<JsonRecord>>(_config.generalConfig.QueueSize);
+    auto processorToSinkQueue = std::make_shared<TSQueue<JsonRecord>>(_config->generalConfig.QueueSize);
     _sink->start(processorToSinkQueue);
 
-    // TODO: Start the specified number of thread processors
-    _processor->start(sourceToProcessorQueue, processorToSinkQueue);
+    // Create the number of processors specified in the config
+    for (size_t i = 0; i < _config->generalConfig.NumberProcessingThreads; i++)
+    {
+        auto processor = std::make_shared<JsonDeserializer>();
+        processor->start(sourceToProcessorQueue, processorToSinkQueue);
+        _processors.push_back(processor);
+    }
 
     // Wait for source, sink and processors to finish
     bool completed = false;
     while (!completed)
     {
-        completed = _source->isCompleted() && _sink->isCompleted() && _processor->isCompleted();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        completed = _source->isCompleted() && _sink->isCompleted();
+        for (auto processor : _processors)
+        {
+            completed = completed && processor->isCompleted();
+        }
     }
 };
 
 void DataPipeline::stop()
 {
     _source->stop();
+    for (auto processor : _processors)
+    {
+        processor->stop();
+    }
     _sink->stop();
-    _processor->stop();
 };
