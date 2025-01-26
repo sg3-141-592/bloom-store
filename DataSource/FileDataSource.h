@@ -9,17 +9,15 @@
 #include "../Config.h"
 #include "../MetricsTracker.h"
 
-class FileDataSource : public DataSource<std::string, std::streampos>
-{
+class FileDataSource : public DataSource<std::string, std::streampos> {
 public:
-    FileDataSource(std::shared_ptr<Config> config);
-    void start(std::shared_ptr<TSQueue<StringRecord>> queue);
-    void stop();
-    ~FileDataSource();
+  FileDataSource(std::shared_ptr<Config> config);
+  void start(std::shared_ptr<TSQueue<StringRecord>> queue);
+  void stop();
+  ~FileDataSource();
+
 private:
-    std::ifstream file;
-    std::string _filename;
-    std::thread _thread;
-    std::unique_ptr<MetricsTracker> _metricsTracker;
-    std::shared_ptr<Config> _config;
+  std::thread _thread;
+  std::unique_ptr<MetricsTracker> _metricsTracker;
+  std::shared_ptr<Config> _config;
 };
