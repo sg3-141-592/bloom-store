@@ -56,6 +56,7 @@ set(SOURCES
     DataSink/FolderDataSink.cpp
     DataSink/CompressBundle.cpp
     RecordProcessor/JsonDeserializer.cpp
+    Utilities/Checkpoint.cpp
     DataPipeline.cpp
     Archive.cpp
     Config.cpp
@@ -95,6 +96,7 @@ add_executable(
     test_archive_files
     ${TEST_SOURCES}
     RecordProcessor/JsonDeserializer.cpp
+    Utilities/Checkpoint.cpp
     Config.cpp
 )
 
