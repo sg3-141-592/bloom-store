@@ -11,7 +11,7 @@ FileDataSource::FileDataSource(std::string filename) {
     _metricsTracker = new MetricsTracker("FileDataSource");
 };
 
-void FileDataSource::start(std::shared_ptr<TSQueue<Record>> queue) {
+void FileDataSource::start(std::shared_ptr<TSQueue<Record<std::string, std::streampos>>> queue) {
     _thread = std::thread ([this, queue]() {
         std::cout << "Starting loading messages\n";
 
@@ -23,9 +23,9 @@ void FileDataSource::start(std::shared_ptr<TSQueue<Record>> queue) {
             std::streampos checkpoint = infile.tellg();
             
             // Push value to the queue
-            if(!queue->try_push(Record{ nextline, checkpoint })) {
+            if(!queue->try_push(Record<std::string, std::streampos>{ nextline, checkpoint })) {
                 // If can't push to the queue, then pause and try again
-                while (!queue->try_push(Record{ nextline, checkpoint })) {
+                while (!queue->try_push(Record<std::string, std::streampos>{ nextline, checkpoint })) {
                     std::this_thread::yield();
                     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
                 }
@@ -37,7 +37,7 @@ void FileDataSource::start(std::shared_ptr<TSQueue<Record>> queue) {
 
         // Push EOF to terminate the queue
         // TODO: Add handling for number of thread for EOF
-        queue->push(Record{ "EOF", -1 });
+        queue->push(Record<std::string, std::streampos>{ "EOF", -1 });
 
         std::cout << "Finished loading messages\n";
 

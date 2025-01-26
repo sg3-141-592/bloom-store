@@ -43,8 +43,8 @@ inline json JsonDeserializer::process(std::string in)
     return extracted;
 };
 
-void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
-                             std::shared_ptr<TSQueue<json>> sinkQueue)
+void JsonDeserializer::start(std::shared_ptr<TSQueue<Record<std::string, std::streampos>>> sourceQueue,
+                             std::shared_ptr<TSQueue<Record<json, std::streampos>>> sinkQueue)
 {
     _thread = std::thread([this, sourceQueue, sinkQueue]()
                           {
@@ -60,7 +60,7 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
 
             json processedMessage = process(std::move(message.data));
             
-            while (!sinkQueue->try_push(std::move(processedMessage)))
+            while (!sinkQueue->try_push(Record<json, std::streampos>{std::move(processedMessage), message.checkpoint}))
             {
                 std::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -69,7 +69,8 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<Record>> sourceQueue,
             _metricsTracker->recordMessage();
             _metricsTracker->printMetricsIfNeeded();
         }
-        sinkQueue->push(json::object());
+        // Pushing an end of stream marker
+        sinkQueue->push(Record<json, std::streampos>{json::object(), -1});
 
         std::cout << "Finished processing messages\n";
 

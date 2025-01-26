@@ -19,11 +19,11 @@ DataPipeline::DataPipeline(std::shared_ptr<DataSource> source, std::shared_ptr<D
 void DataPipeline::process()
 {
     // Setup Source
-    auto sourceToProcessorQueue = std::make_shared<TSQueue<Record>>(_config.generalConfig.QueueSize);
+    auto sourceToProcessorQueue = std::make_shared<TSQueue<Record<std::string, std::streampos>>>(_config.generalConfig.QueueSize);
     _source->start(sourceToProcessorQueue);
 
     // Setup Sink
-    auto processorToSinkQueue = std::make_shared<TSQueue<json>>(_config.generalConfig.QueueSize);
+    auto processorToSinkQueue = std::make_shared<TSQueue<Record<json, std::streampos>>>(_config.generalConfig.QueueSize);
     _sink->start(processorToSinkQueue);
 
     // Start the processors

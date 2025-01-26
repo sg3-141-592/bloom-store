@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
+#include <argparse/argparse.hpp>
 #include "bloom.h"
 
 #include "DataSink/CompressBundle.h"
@@ -15,23 +16,26 @@ using json = nlohmann::json;
 
 int main(int argc, char *argv[])
 {
-    std::string testString;
-
-    // Check if the command line arguments contain --name
-    for (int i = 1; i < argc; ++i)
+    argparse::ArgumentParser program("Search");
+    program.add_argument("--name")
+        .help("Artist name to search for")
+        .required();
+    program.add_argument("--type")
+        .help("Artist type to search for, e.g. 'Person', 'Group'")
+        .default_value(std::string(""));
+    
+    try
     {
-        if (std::string(argv[i]) == "--name" && i + 1 < argc)
-        {
-            testString = argv[i + 1];
-            break;
-        }
+        program.parse_args(argc, argv);
     }
-
-    if (testString.empty())
+    catch (const std::exception &err)
     {
-        std::cerr << "Usage: " << argv[0] << " --name <name>" << std::endl;
+        std::cerr << err.what() << std::endl;
+        std::cerr << program;
         return 1;
     }
+
+    std::string testString = program.get<std::string>("name");
 
     // Rest of the code
     std::string path = get_path_func(testString);

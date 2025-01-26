@@ -71,6 +71,15 @@ target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZL
 # -------------------------------------------------------
 # Searching
 # -------------------------------------------------------
+FetchContent_Declare(
+    argparse
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG v3.2
+)
+FetchContent_MakeAvailable(argparse)
+
+include_directories(${argparse_SOURCE_DIR}/include)
+
 add_executable(Search Search.cpp Config.cpp DataSink/CompressBundle.cpp)
 
 target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
