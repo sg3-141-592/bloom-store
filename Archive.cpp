@@ -1,4 +1,5 @@
 #include <csignal>
+#include <memory>
 #include <iostream>
 
 #include "DataPipeline.h"
@@ -13,7 +14,7 @@ using json = nlohmann::json;
 
 void signalHandler(int signum);
 
-DataPipeline *pipeline;
+std::unique_ptr<DataPipeline> pipeline;
 
 int main() {
   // Make Archive program interruptible
@@ -31,7 +32,7 @@ int main() {
       std::make_shared<FolderDataSink>(get_path_func);
   auto jsonProcessor = std::make_shared<JsonDeserializer>();
 
-  pipeline = new DataPipeline(fileSource, folderSink, jsonProcessor, config);
+  pipeline = std::make_unique<DataPipeline>(fileSource, folderSink, jsonProcessor, config);
 
   pipeline->process();
 
