@@ -8,7 +8,7 @@
 FolderDataSink::FolderDataSink(std::function<std::string(std::string)> getPathFunc)
 {
     _getPathFunc = getPathFunc;
-    _metricsTracker = new MetricsTracker("FolderDataSink");
+    _metricsTracker = std::make_unique<MetricsTracker>("FolderDataSink");
 }
 
 auto FolderDataSink::writeNext(json itemIn) -> bool
@@ -68,17 +68,19 @@ void FolderDataSink::start(std::shared_ptr<TSQueue<JsonRecord>> queue)
 
         std::cout << "Finished writing messages\n"; });
 
-        completed = true;
+        completed.store(true);
 }
 
 void FolderDataSink::stop()
 {
-    _stopFlag = true;
-    _thread.join();
+    _stopFlag.store(true);
+    if (_thread.joinable())
+    {
+        _thread.join();
+    }
 }
 
 FolderDataSink::~FolderDataSink()
 {
-    _thread.join();
-    delete _metricsTracker;
+    stop();
 }

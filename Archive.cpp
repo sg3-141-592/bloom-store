@@ -25,15 +25,13 @@ int main() {
   // Load default config.ini on start-up
   Config config;
 
-  std::shared_ptr<FileDataSource> fileSource =
+  auto fileSource =
       std::make_shared<FileDataSource>(config.sourceConfig.Path);
-  std::shared_ptr<FolderDataSink> folderSink =
+  auto folderSink =
       std::make_shared<FolderDataSink>(get_path_func);
+  auto jsonProcessor = std::make_shared<JsonDeserializer>();
 
-  pipeline = new DataPipeline(fileSource, folderSink, config);
-
-  pipeline->addProcessor<std::string, json>(
-      std::make_shared<JsonDeserializer>());
+  pipeline = new DataPipeline(fileSource, folderSink, jsonProcessor, config);
 
   pipeline->process();
 

@@ -32,11 +32,11 @@ TEST_F(IntegrationTest, SmallFile)
     auto pipeline = new DataPipeline(
         std::make_shared<FileDataSource>("./test_files/small.json"),
         std::make_shared<FolderDataSink>(get_path_func),
+        std::make_shared<JsonDeserializer>(),
         testConfig
     );
-    pipeline->addProcessor<std::string, json>(std::make_shared<JsonDeserializer>());
     
-    pipeline->process(); // TODO: Why doesn't this stop 
+    pipeline->process();
 
     std::vector<std::string> BandNames = {"Green Day", "The Beatles", "The Rolling Stones", "The Who", "The Doors"};
     for (auto &bandName : BandNames)

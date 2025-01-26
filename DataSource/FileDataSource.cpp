@@ -55,10 +55,13 @@ void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
 }
 
 void FileDataSource::stop() {
-    _stopFlag = true;
-    _thread.join();
+    _stopFlag.store(true);
+    if (_thread.joinable())
+    {
+        _thread.join();
+    }
 }
 
 FileDataSource::~FileDataSource() {
-    _thread.join();
+    stop();
 };

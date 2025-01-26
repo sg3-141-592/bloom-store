@@ -54,5 +54,5 @@ private:
     std::map<std::string, FolderData> _pathToHook;
     std::thread _thread;
     const int BUNDLE_SIZE = 1000;
-    MetricsTracker *_metricsTracker;
+    std::unique_ptr<MetricsTracker> _metricsTracker;
 };

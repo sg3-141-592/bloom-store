@@ -11,7 +11,7 @@ class JsonDeserializer : public RecordProcessor<std::string, json>
 private:
     std::shared_ptr<TSQueue<StringRecord>> _sourceQueue;
     std::thread _thread;
-    MetricsTracker* _metricsTracker;
+    std::unique_ptr<MetricsTracker> _metricsTracker;
 public:
     JsonDeserializer();
     json process(std::string in);

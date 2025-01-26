@@ -4,7 +4,7 @@
 
 JsonDeserializer::JsonDeserializer()
 {
-    _metricsTracker = new MetricsTracker("JsonDeserializer");
+    _metricsTracker = std::make_unique<MetricsTracker>("JsonDeserializer");
 };
 
 inline json JsonDeserializer::process(std::string in)
@@ -46,6 +46,11 @@ inline json JsonDeserializer::process(std::string in)
 void JsonDeserializer::start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
                              std::shared_ptr<TSQueue<JsonRecord>> sinkQueue)
 {
+    // Ensure the thread is not already running
+    if (_thread.joinable()) {
+        throw std::runtime_error("Already running!");
+    }
+
     _thread = std::thread([this, sourceQueue, sinkQueue]()
                           {
         std::cout << "Starting processing messages\n";
@@ -74,12 +79,12 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
 
         std::cout << "Finished processing messages\n";
 
-        completed = true; });
+        completed.store(true); });
 }
 
 void JsonDeserializer::stop()
 {
-    _stopFlag = true;
+    _stopFlag.store(true);
     if (_thread.joinable())
     {
         _thread.join();
@@ -88,10 +93,5 @@ void JsonDeserializer::stop()
 
 JsonDeserializer::~JsonDeserializer()
 {
-    // Handles case if thread has already been killed or never started
-    if (_thread.joinable())
-    {
-        _thread.join();
-    }
-    delete _metricsTracker;
+    stop();
 };
