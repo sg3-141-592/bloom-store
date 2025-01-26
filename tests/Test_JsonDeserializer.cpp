@@ -9,6 +9,7 @@ using json = nlohmann::json;
 #include <boost/lockfree/spsc_queue.hpp>
 
 #include "../RecordProcessor/JsonDeserializer.h"
+#include "../Utilities/CommonTypes.h"
 
 class JsonDeserializerTest : public testing::Test
 {
@@ -27,8 +28,8 @@ protected:
 TEST_F(JsonDeserializerTest, DeserializeJson)
 {
     // Create a test queue of records
-    auto sourceQueue = std::make_shared<TSQueue<Record<std::string, std::streampos>>>(128);
-    auto sinkQueue = std::make_shared<TSQueue<Record<json, std::streampos>>>(128);
+    auto sourceQueue = std::make_shared<TSQueue<StringRecord>>(128);
+    auto sinkQueue = std::make_shared<TSQueue<JsonRecord>>(128);
 
     JsonDeserializer deserializer;
     deserializer.start(sourceQueue, sinkQueue);
@@ -37,9 +38,9 @@ TEST_F(JsonDeserializerTest, DeserializeJson)
     auto timeout = std::chrono::seconds(5);
 
     // Push test messages to the queue
-    Record<std::string, std::streampos> record{R"({"key": "value"})", 0};
+    StringRecord record{R"({"key": "value"})", 0};
     sourceQueue->push(record);
-    Record<std::string, std::streampos> record2{"EOF", -1};
+    StringRecord record2{"EOF", -1};
     sourceQueue->push(record2);
 
     while (!deserializer.isCompleted())

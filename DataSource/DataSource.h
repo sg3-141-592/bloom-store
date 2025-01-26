@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "../Utilities/CommonData.h"
+#include "../Utilities/CommonTypes.h"
 #include "../Utilities/TSQueue.h"
 
 template <typename TData, typename TCheckpoint>

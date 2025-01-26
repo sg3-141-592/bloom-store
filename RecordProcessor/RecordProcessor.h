@@ -10,28 +10,35 @@ using json = nlohmann::json;
 #include <boost/lockfree/spsc_queue.hpp>
 
 #include "../DataSource/DataSource.h"
+#include "../Utilities/CommonTypes.h"
 #include "../Utilities/TSQueue.h"
 
 class AbstractProcessor {
 public:
-    virtual ~AbstractProcessor() = default; // Virtual destructor
-    virtual void process() = 0; // Pure virtual function
-    virtual void start(std::shared_ptr<TSQueue<Record<std::string, std::streampos>>> sourceQueue, std::shared_ptr<TSQueue<Record<json, std::streampos>>> sinkQueue) = 0;
-    virtual bool isCompleted() { return completed; };
-    virtual void stop() = 0;
+  virtual ~AbstractProcessor() = default;
+  virtual void process() = 0;
+  virtual void start(
+      std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
+      std::shared_ptr<TSQueue<JsonRecord>> sinkQueue) = 0;
+  virtual bool isCompleted() { return completed; };
+  virtual void stop() = 0;
+
 protected:
-    std::atomic<bool> completed = false;
-    std::atomic<bool> _stopFlag{false}; // Used for handling cancelling processing
+  std::atomic<bool> completed = false;
+  std::atomic<bool> _stopFlag{false}; // Used for handling cancelling processing
 };
 
-template<typename InputType, typename OutputType>
+template <typename InputType, typename OutputType>
 class RecordProcessor : public AbstractProcessor {
 public:
-    virtual OutputType process(InputType in) = 0; // Pure virtual function
-    void process() override {
-        // Needed otherwise the derived classes would think they're abstract
-    };
-    void start(std::shared_ptr<TSQueue<Record<std::string, std::streampos>>> sourceQueue, std::shared_ptr<TSQueue<Record<json, std::streampos>>> sinkQueue) override {
-        // Needed otherwise the derived classes would think they're abstract
-    };
+  virtual OutputType process(InputType in) = 0; // Pure virtual function
+  void process() override{
+      // Needed otherwise the derived classes would think they're abstract
+  };
+  void start(
+      std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
+      std::shared_ptr<TSQueue<JsonRecord>> sinkQueue)
+      override{
+          // Needed otherwise the derived classes would think they're abstract
+      };
 };

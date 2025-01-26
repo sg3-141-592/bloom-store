@@ -5,13 +5,14 @@
 #include <thread>
 
 #include "DataSource.h"
+#include "../Utilities/CommonTypes.h"
 #include "../MetricsTracker.h"
 
 class FileDataSource : public DataSource<std::string, std::streampos>
 {
 public:
     FileDataSource(std::string filename);
-    void start(std::shared_ptr<TSQueue<Record<std::string, std::streampos>>> queue);
+    void start(std::shared_ptr<TSQueue<StringRecord>> queue);
     void stop();
     ~FileDataSource();
 private:

@@ -22,7 +22,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  // Load config on start-up
+  // Load default config.ini on start-up
   Config config;
 
   std::shared_ptr<FileDataSource> fileSource =
@@ -41,8 +41,7 @@ int main() {
 }
 
 void signalHandler(int signum) {
-  std::cout << "Interrupt signal (" << signum << ") received.\n";
-
+  
   // Send a signal to the DataProcessor to complete gracefully
   pipeline->stop();
 

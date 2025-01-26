@@ -43,13 +43,13 @@ auto FolderDataSink::writeNext(json itemIn) -> bool
     return true;
 }
 
-void FolderDataSink::start(std::shared_ptr<TSQueue<Record<json, std::streampos>>> queue)
+void FolderDataSink::start(std::shared_ptr<TSQueue<JsonRecord>> queue)
 {
     _thread = std::thread([this, queue]()
                           {
         std::cout << "Starting writing messages\n";
 
-        Record<json, std::streampos> itemIn;
+        JsonRecord itemIn;
         while (!_stopFlag) {
             itemIn = queue->pop();
             if (itemIn.data.empty()) {  // Use empty() instead of comparing to empty object

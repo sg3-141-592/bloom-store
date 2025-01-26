@@ -45,7 +45,7 @@ class FolderDataSink : public DataSink
 public:
     FolderDataSink(std::function<std::string(std::string)> getPathFunc);
     bool writeNext(json in);
-    void start(std::shared_ptr<TSQueue<Record<json, std::streampos>>> queue);
+    void start(std::shared_ptr<TSQueue<JsonRecord>> queue);
     ~FolderDataSink();
     void stop();
 

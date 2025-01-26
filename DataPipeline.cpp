@@ -1,6 +1,7 @@
 #include "DataPipeline.h"
 
 #include "RecordProcessor/JsonDeserializer.h"
+#include "Utilities/CommonTypes.h"
 #include "Utilities/TSQueue.h"
 
 #include <iostream>
@@ -19,17 +20,17 @@ DataPipeline::DataPipeline(std::shared_ptr<DataSource<std::string, std::streampo
 void DataPipeline::process()
 {
     // Setup Source
-    auto sourceToProcessorQueue = std::make_shared<TSQueue<Record<std::string, std::streampos>>>(_config.generalConfig.QueueSize);
+    auto sourceToProcessorQueue = std::make_shared<TSQueue<StringRecord>>(_config.generalConfig.QueueSize);
     _source->start(sourceToProcessorQueue);
 
     // Setup Sink
-    auto processorToSinkQueue = std::make_shared<TSQueue<Record<json, std::streampos>>>(_config.generalConfig.QueueSize);
+    auto processorToSinkQueue = std::make_shared<TSQueue<JsonRecord>>(_config.generalConfig.QueueSize);
     _sink->start(processorToSinkQueue);
 
     // Start the specified number of thread processors
-    for(int i = 0;i < _config.generalConfig.NumberProcessingThreads;i++) {
-        _processors[0]->start(sourceToProcessorQueue, processorToSinkQueue);
-
+    for (auto &processor : _processors)
+    {
+        processor->start(sourceToProcessorQueue, processorToSinkQueue);
     }
 
     // Wait for source, sink and processors to finish
