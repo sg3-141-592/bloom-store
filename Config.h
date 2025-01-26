@@ -18,6 +18,7 @@ struct SinkConfig
 {
     int NumberItemsPerBundle = 1000;
     float BloomFalsePositiveProbability = 0.01f;
+    int CheckpointFrequency = 1000;
 };
 
 class Config

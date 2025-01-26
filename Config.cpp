@@ -22,33 +22,33 @@ std::string get_path_func(std::string name)
     return "out/unknown";
 }
 
+template<typename T>
+T getOptionalConfigValue(const boost::property_tree::ptree& pt, const std::string& key, const T& defaultValue) {
+    try {
+        return pt.get<T>(key);
+    } catch (const boost::property_tree::ptree_bad_path& e) {
+        return defaultValue;
+    }
+}
+
+template<typename T>
+T getMandatoryConfigValue(const boost::property_tree::ptree& pt, const std::string& key) {
+    try {
+        return pt.get<T>(key);
+    } catch (const boost::property_tree::ptree_bad_path& e) {
+        std::cerr << "Fatal error: Missing '" << key << "' in configuration file." << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+}
+
 Config::Config(std::string path)
 {
     boost::property_tree::ptree pt;
     boost::property_tree::ini_parser::read_ini(path, pt);
 
-    try {
-        generalConfig.QueueSize = pt.get<int>("General.queue_size");
-    } catch (const boost::property_tree::ptree_bad_path& e) {
-        // Take the default value off the struct
-    }
-
-    try {
-        sourceConfig.Path = pt.get<std::string>("Source.path");
-    } catch (const boost::property_tree::ptree_bad_path& e) {
-        std::cerr << "Fatal error: Missing 'Source.path' in configuration file." << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    try {
-        sinkConfig.NumberItemsPerBundle = pt.get<int>("Sink.number_items_per_bundle");
-    } catch (const boost::property_tree::ptree_bad_path& e) {
-        // Take the default value off the struct
-    }
-
-    try {
-        sinkConfig.BloomFalsePositiveProbability = pt.get<float>("Sink.bloom_false_positive_probability");
-    } catch (const boost::property_tree::ptree_bad_path& e) {
-        // Take the default value off the struct
-    }
-};
+    generalConfig.QueueSize = getOptionalConfigValue<int>(pt, "General.queue_size", generalConfig.QueueSize);
+    sourceConfig.Path = getMandatoryConfigValue<std::string>(pt, "Source.path");
+    sinkConfig.NumberItemsPerBundle = getOptionalConfigValue<int>(pt, "Sink.number_items_per_bundle", sinkConfig.NumberItemsPerBundle);
+    sinkConfig.BloomFalsePositiveProbability = getOptionalConfigValue<float>(pt, "Sink.bloom_false_positive_probability", sinkConfig.BloomFalsePositiveProbability);
+    sinkConfig.CheckpointFrequency = getOptionalConfigValue<int>(pt, "Sink.checkpoint_frequency", sinkConfig.CheckpointFrequency);
+}
