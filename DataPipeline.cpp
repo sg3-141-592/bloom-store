@@ -1,6 +1,7 @@
 #include "DataPipeline.h"
 
 #include "RecordProcessor/JsonDeserializer.h"
+#include "Utilities/ProgramLock.h"
 #include "Utilities/CommonTypes.h"
 #include "Utilities/TSQueue.h"
 

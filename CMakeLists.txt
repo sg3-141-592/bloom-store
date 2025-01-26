@@ -77,7 +77,7 @@ set(SOURCES
     Utilities/Checkpoint.cpp
     DataPipeline.cpp
     Config.cpp
-    ProgramLock.cpp
+    Utilities/ProgramLock.cpp
     Search/SearchRecords.cpp
 )
 

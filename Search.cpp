@@ -36,7 +36,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    SearchRecords(program.get<std::string>("name"));
+    auto results = SearchRecords(program.get<std::string>("name"));
+
+    for (auto &result : results)
+    {
+        std::cout << result.dump() << std::endl;
+    }
 
     return 0;
 }

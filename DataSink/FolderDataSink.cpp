@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <iostream>
 
-FolderDataSink::FolderDataSink(std::function<std::string(std::string)> getPathFunc)
+FolderDataSink::FolderDataSink(getPathFuncType getPathFunc)
 {
     _getPathFunc = getPathFunc;
     _metricsTracker = std::make_unique<MetricsTracker>("FolderDataSink");
@@ -13,13 +13,13 @@ FolderDataSink::FolderDataSink(std::function<std::string(std::string)> getPathFu
 
 auto FolderDataSink::writeNext(json itemIn) -> bool
 {
-    std::filesystem::path dir = std::filesystem::path(_getPathFunc(itemIn["name"])).parent_path();
+    std::filesystem::path dir = std::filesystem::path(_getPathFunc(itemIn["name"], "")).parent_path();
     if (!std::filesystem::exists(dir))
     {
         std::filesystem::create_directories(dir);
     }
 
-    const std::string path = _getPathFunc(itemIn["name"]);
+    const std::string path = _getPathFunc(itemIn["name"], "");
 
     // Extract index value from the json object and insert it into the bloom filter
     bloom_add(&_pathToHook[path].bloomFilter, itemIn["name"].get<std::string>().c_str(), itemIn["name"].get<std::string>().length());

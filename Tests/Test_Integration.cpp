@@ -37,10 +37,11 @@ TEST_F(IntegrationTest, SmallFile)
     
     pipeline->process();
 
-    std::vector<std::string> BandNames = {"Green Day", "The Beatles", "The Rolling Stones", "The Who", "The Doors"};
+    std::vector<std::string> BandNames = {"Rados", "Power Tool"};
     for (auto &bandName : BandNames)
     {
-        SearchRecords(bandName);
+        auto results = SearchRecords(bandName);
+        ASSERT_EQ(results.size(), 1);
     }
     
 }

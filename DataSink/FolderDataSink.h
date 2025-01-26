@@ -43,14 +43,14 @@ struct FolderData
 class FolderDataSink : public DataSink
 {
 public:
-    FolderDataSink(std::function<std::string(std::string)> getPathFunc);
+    FolderDataSink(getPathFuncType getPathFunc);
     bool writeNext(json in);
     void start(std::shared_ptr<TSQueue<JsonRecord>> queue);
     ~FolderDataSink();
     void stop();
 
 private:
-    std::function<std::string(std::string)> _getPathFunc;
+    getPathFuncType _getPathFunc;
     std::map<std::string, FolderData> _pathToHook;
     std::thread _thread;
     const int BUNDLE_SIZE = 1000;

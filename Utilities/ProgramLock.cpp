@@ -4,11 +4,11 @@
 #include <unistd.h>
 
 #include <filesystem>
-using namespace std::filesystem;
+namespace fs = std::filesystem;
 
 #include "ProgramLock.h"
 
-ProgramLock::ProgramLock(const std::string &lockFileName) : lockFilePath(std::filesystem::temp_directory_path() / lockFileName),
+ProgramLock::ProgramLock(const std::string &lockFileName) : lockFilePath(fs::temp_directory_path() / lockFileName),
                                                             lockFileDescriptor(-1) {};
 
 bool ProgramLock::tryLock()
@@ -39,6 +39,6 @@ ProgramLock::~ProgramLock()
     {
         flock(lockFileDescriptor, LOCK_UN);
         close(lockFileDescriptor);
-        std::filesystem::remove(lockFilePath);
+        fs::remove(lockFilePath);
     }
 };

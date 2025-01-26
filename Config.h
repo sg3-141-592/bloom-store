@@ -2,7 +2,9 @@
 
 #include <string>
 
-std::string get_path_func(std::string name);
+typedef std::function<std::string(std::string, std::string)> getPathFuncType;
+
+std::string get_path_func(std::string name, std::string type = "");
 
 struct GeneralConfig
 {

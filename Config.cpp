@@ -5,7 +5,7 @@
 
 #include "Config.h"
 
-std::string get_path_func(std::string name)
+std::string get_path_func(std::string name, std::string type)
 {
     if (!name.empty())
     {

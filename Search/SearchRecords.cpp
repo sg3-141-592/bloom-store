@@ -6,16 +6,14 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
-#include <nlohmann/json.hpp>
-using json = nlohmann::json;
-
 #include "bloom.h"
 
 #include "../Config.h"
 #include "../DataSink/CompressBundle.h"
 
-void SearchRecords(std::string name) {
+std::vector<json> SearchRecords(std::string name) {
     std::string path = get_path_func(name);
+    std::vector<json> results;
 
     // Iterate over all the bloom filters in the directory for matches
     std::vector<std::string> bloomFiles;
@@ -44,11 +42,13 @@ void SearchRecords(std::string name) {
                 json result = json::parse(line);
                 if (result["name"] == name)
                 {
-                    std::cout << result.dump() << std::endl;
+                    results.push_back(result);
                 }
             }
         }
 
         bloom_free(&bloomFilter);
     }
+
+    return results;
 }
