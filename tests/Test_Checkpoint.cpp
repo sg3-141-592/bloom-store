@@ -29,8 +29,6 @@ TEST_F(CheckpointTest, TryAndAccessLockMultipleTimes)
     std::string checkpointPath = "/tmp/checkpoint_multiple.lock";
     Checkpoint checkpoint(checkpointPath);
 
-    Checkpoint checkpoint2(checkpointPath);
-
     try {
         Checkpoint checkpoint2(checkpointPath);
         FAIL() << "Expected std::runtime_error";

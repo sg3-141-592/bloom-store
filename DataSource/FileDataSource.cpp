@@ -7,8 +7,8 @@
 #define SLEEP_TIME 100 // how long to sleep when queues are full
 
 FileDataSource::FileDataSource(std::string filename) {
-    _filename = filename; // TODO: Get rid of this unnecessary copy (std::move)
-    _metricsTracker = new MetricsTracker("FileDataSource");
+    _filename = std::move(filename);
+    _metricsTracker = std::make_unique<MetricsTracker>("FileDataSource");
 };
 
 void FileDataSource::start(std::shared_ptr<TSQueue<Record<std::string, std::streampos>>> queue) {
@@ -16,6 +16,11 @@ void FileDataSource::start(std::shared_ptr<TSQueue<Record<std::string, std::stre
         std::cout << "Starting loading messages\n";
 
         std::ifstream infile(_filename);
+        if (!infile.is_open()) {
+            std::cerr << "Failed to open file: " << _filename << std::endl;
+            return;
+        }
+
         std::string nextline;
         while (getline(infile, nextline) && !_stopFlag) {
 
@@ -47,12 +52,11 @@ void FileDataSource::start(std::shared_ptr<TSQueue<Record<std::string, std::stre
     });
 }
 
-FileDataSource::~FileDataSource() {
-    _thread.join();
-    delete _metricsTracker;
-};
-
 void FileDataSource::stop() {
     _stopFlag = true;
     _thread.join();
 }
+
+FileDataSource::~FileDataSource() {
+    _thread.join();
+};

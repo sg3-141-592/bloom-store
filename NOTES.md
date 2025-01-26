@@ -16,6 +16,7 @@ time grep "Green Day" artist | jq '.type + " " + .name'een Day" artist | jq '.ty
 head big_artists.json -n 10000 > artists.json 
 rm -rf archive/*
 
+rm *.profraw *.profdata
 LLVM_PROFILE_FILE="test_%p.profraw" ./test_archive_files
 llvm-profdata merge -o coverage.profdata *.profraw
 llvm-cov show ./test_archive_files \

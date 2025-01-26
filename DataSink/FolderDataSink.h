@@ -21,7 +21,7 @@ struct FolderData
     std::string buffer;
     bloom bloomFilter;
 
-    FolderData(int bloomSize = 1000, float bloomProbability = 0.01)
+    FolderData(int bloomSize = 1000, float bloomProbability = 0.01f)
     {
         buffer.reserve(1024); // Pre-allocate since we'll be appending to the buffer a lot
 

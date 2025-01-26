@@ -5,6 +5,24 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE Debug)
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#     add_compile_options(
+#         -Wall
+#         -Wextra
+#         -Wpedantic
+#         -Wshadow
+#         -Wnon-virtual-dtor
+#         -Wold-style-cast
+#         -Wcast-align
+#         -Wunused
+#         -Woverloaded-virtual
+#         -Wconversion
+#         -Wsign-conversion
+#         -Wnull-dereference
+#         -Wdouble-promotion
+#         -Wformat=2
+#     )
+# endif()
 
 include(FetchContent)
 
@@ -58,12 +76,12 @@ set(SOURCES
     RecordProcessor/JsonDeserializer.cpp
     Utilities/Checkpoint.cpp
     DataPipeline.cpp
-    Archive.cpp
     Config.cpp
     ProgramLock.cpp
+    Search/SearchRecords.cpp
 )
 
-add_executable(ArchiveFiles ${SOURCES})
+add_executable(ArchiveFiles ${SOURCES} Archive.cpp)
 
 add_dependencies(ArchiveFiles build_libbloom)
 
@@ -81,7 +99,7 @@ FetchContent_MakeAvailable(argparse)
 
 include_directories(${argparse_SOURCE_DIR}/include)
 
-add_executable(Search Search.cpp Config.cpp DataSink/CompressBundle.cpp)
+add_executable(Search Search.cpp Config.cpp Search/SearchRecords.cpp DataSink/CompressBundle.cpp)
 
 target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
 
@@ -95,9 +113,7 @@ file(GLOB TEST_SOURCES tests/Test_*.cpp)
 add_executable(
     test_archive_files
     ${TEST_SOURCES}
-    RecordProcessor/JsonDeserializer.cpp
-    Utilities/Checkpoint.cpp
-    Config.cpp
+    ${SOURCES}
 )
 
 target_compile_options(test_archive_files PRIVATE -fprofile-instr-generate -fcoverage-mapping)
@@ -109,6 +125,7 @@ target_link_libraries(
     gtest_main
     nlohmann_json::nlohmann_json
     ZLIB::ZLIB
+    libbloom_static
 )
 
 add_test(
