@@ -47,7 +47,7 @@ void DataPipeline::process() {
 
 void DataPipeline::stop() {
   _source->stop();
-  for (auto processor : _processors) {
+  for (const auto processor : _processors) {
     processor->stop();
   }
   _sink->stop();

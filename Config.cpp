@@ -6,14 +6,19 @@
 #include "Config.h"
 
 std::string get_path_func(std::string name, std::string type) {
+  // Normalise the folder names, there's some inconsistent casing of them on the dataset
+  if (!type.empty()) {
+    type[0] = std::toupper(type[0]);
+  }
+  
   char first_char = std::tolower(name[0]);
+
   if (isalnum(first_char)) {
     if (type != "") {
       return "archive/" + std::string(1, first_char) + "/" + type + "/";
     } else {
       return "archive/" + std::string(1, first_char) + "/";
     }
-
   } else {
     if (type != "") {
       return "archive/unknown/" + type + "/";

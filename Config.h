@@ -18,7 +18,7 @@ struct SourceConfig {
 
 struct SinkConfig {
   int NumberItemsPerBundle = 1000;
-  float BloomFalsePositiveProbability = 0.01f;
+  float BloomFalsePositiveProbability = 0.01F;
   int CheckpointFrequency = 1000;
 };
 

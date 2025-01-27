@@ -31,10 +31,10 @@ public:
       auto now_c = std::chrono::system_clock::to_time_t(
           std::chrono::system_clock::now());
       auto threadId = std::this_thread::get_id();
-      // std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ","
-      //           << name << "," << lastSecondMessageCount << "," <<
-      //           messageCount
-      //           << "," << threadId << std::endl;
+      std::cout << std::put_time(std::localtime(&now_c), "%F %T") << ","
+                << name << "," << lastSecondMessageCount << "," <<
+                messageCount
+                << "," << threadId << std::endl;
 
       lastSecondMessageCount = 0;
       lastMetricReset = now;

@@ -57,8 +57,6 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue
       if (message.data == "EOF" && message.checkpoint == -1) {
         break;
       }
-      
-      std::cout << "Checkpoint: " << message.checkpoint << std::endl;
 
       // This process can throw so we print the output for debugging
       std::string data_copy;
@@ -70,8 +68,7 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
       } catch (const json::exception &e) {
-        std::cerr << "Cannot process: " << message.data << " - Error: " << e.what()
-                  << std::endl;
+        std::cerr << "Cannot process: " << message.data << " - Error: " << e.what() << std::endl;
       }
 
       _metricsTracker->recordMessage();
