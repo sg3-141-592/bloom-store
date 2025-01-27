@@ -18,7 +18,7 @@ std::vector<json> SearchRecords(std::string name, std::string type) {
   // Iterate over all the bloom filters in the directory for matches
   std::vector<std::string> bloomFiles;
   for (const auto &entry : fs::recursive_directory_iterator(path)) {
-    if (type != "") {
+    if (type.empty()) {
       if (entry.path().extension() == ".bloom" &&
           entry.path().string().find(type) != std::string::npos) {
         bloomFiles.push_back(entry.path().string());
@@ -30,15 +30,17 @@ std::vector<json> SearchRecords(std::string name, std::string type) {
     }
   }
 
+  // Check all the bloom filters for matches
   for (auto &bloomFile : bloomFiles) {
     bloom bloomFilter;
     bloom_load(&bloomFilter, const_cast<char *>(bloomFile.c_str()));
 
-    if (bloom_check(&bloomFilter, name.c_str(), name.length())) {
+    if (bloom_check(&bloomFilter, name.c_str(),
+                    static_cast<int>(name.length()))) {
       bloomFile.erase(bloomFile.end() - 6, bloomFile.end());
       std::string jsonGzFile = bloomFile + ".json.gz";
-      std::string result = readGzipFileToString(jsonGzFile);
-      std::istringstream stream(result);
+      std::string jsonGzString = readGzipFileToString(jsonGzFile);
+      std::istringstream stream(jsonGzString);
       std::string line;
       while (std::getline(stream, line)) {
         json result = json::parse(line);

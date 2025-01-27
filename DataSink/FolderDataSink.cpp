@@ -66,13 +66,13 @@ auto FolderDataSink::writeNext(json itemIn) -> bool {
   return true;
 }
 
-void FolderDataSink::start(std::shared_ptr<TSQueue<JsonRecord>> queue) {
+void FolderDataSink::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
   _thread = std::thread([this, queue]() {
     std::cout << "Starting writing messages\n";
 
     JsonRecord itemIn;
     while (!_stopFlag) {
-      itemIn = queue->pop();
+      itemIn = std::get<JsonRecord>(queue->pop());
       if (itemIn.data
               .empty() && itemIn.checkpoint == -1) { // Use empty() instead of comparing to empty object
         break;

@@ -9,10 +9,10 @@
 #include "../Config.h"
 #include "../MetricsTracker.h"
 
-class FileDataSource : public DataSource<std::string, std::streampos> {
+class FileDataSource : public DataSource {
 public:
   FileDataSource(std::shared_ptr<Config> config);
-  void start(std::shared_ptr<TSQueue<StringRecord>> queue);
+  void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
   void stop();
   ~FileDataSource();
 

@@ -12,7 +12,7 @@ FileDataSource::FileDataSource(std::shared_ptr<Config> config) {
   _config = std::move(config);
 };
 
-void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
+void FileDataSource::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
   _thread = std::thread([this, queue]() {
     std::cout << "Starting loading messages\n";
 
@@ -23,12 +23,12 @@ void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
       return;
     }
 
+    // Get initial checkpoint for the file
+    std::streampos checkpoint = infile.tellg();
+
     std::string nextline;
     while (getline(infile, nextline) && !_stopFlag) {
-
-      // Get a checkpoint for the file
-      std::streampos checkpoint = infile.tellg();
-
+      
       // Push value to the queue
       if (!queue->try_push(StringRecord{nextline, checkpoint})) {
         // If can't push to the queue, then pause and try again
@@ -37,6 +37,9 @@ void FileDataSource::start(std::shared_ptr<TSQueue<StringRecord>> queue) {
           std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
         }
       }
+
+      // Once we've pushed the file we can update our checkpoint
+      checkpoint = infile.tellg();
 
       _metricsTracker->recordMessage();
       _metricsTracker->printMetricsIfNeeded();

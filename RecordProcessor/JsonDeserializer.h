@@ -6,17 +6,16 @@
 #include "../MetricsTracker.h"
 #include "../Utilities/CommonTypes.h"
 
-class JsonDeserializer : public RecordProcessor<std::string, json> {
-private:
-  std::shared_ptr<TSQueue<StringRecord>> _sourceQueue;
-  std::thread _thread;
-  std::unique_ptr<MetricsTracker> _metricsTracker;
-
+class JsonDeserializer : public AbstractProcessor {
 public:
   JsonDeserializer();
-  json process(std::string in);
-  void start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
-             std::shared_ptr<TSQueue<JsonRecord>> sinkQueue);
+  JsonRecord process(StringRecord in);
+  void start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue,
+             std::shared_ptr<TSQueue<GenericRecord>> sinkQueue);
   void stop();
   ~JsonDeserializer();
+
+private:
+  std::thread _thread;
+  std::unique_ptr<MetricsTracker> _metricsTracker;
 };

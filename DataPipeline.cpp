@@ -10,7 +10,7 @@
 #include <typeinfo>
 
 DataPipeline::DataPipeline(
-    std::shared_ptr<DataSource<std::string, std::streampos>> source,
+    std::shared_ptr<DataSource> source,
     std::shared_ptr<DataSink> sink, std::shared_ptr<Config> config) {
   _source = source;
   _sink = sink;
@@ -20,12 +20,12 @@ DataPipeline::DataPipeline(
 void DataPipeline::process() {
   // Setup Source
   auto sourceToProcessorQueue =
-      std::make_shared<TSQueue<StringRecord>>(_config->generalConfig.QueueSize);
+      std::make_shared<TSQueue<GenericRecord>>(_config->generalConfig.QueueSize);
   _source->start(sourceToProcessorQueue);
 
   // Setup Sink
   auto processorToSinkQueue =
-      std::make_shared<TSQueue<JsonRecord>>(_config->generalConfig.QueueSize);
+      std::make_shared<TSQueue<GenericRecord>>(_config->generalConfig.QueueSize);
   _sink->start(processorToSinkQueue);
 
   // Create the number of processors specified in the config

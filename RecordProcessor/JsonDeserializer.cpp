@@ -6,36 +6,44 @@ JsonDeserializer::JsonDeserializer() {
   _metricsTracker = std::make_unique<MetricsTracker>("JsonDeserializer");
 };
 
-inline json JsonDeserializer::process(std::string in) {
-  auto result = json::parse(in);
-
+JsonRecord JsonDeserializer::process(StringRecord in) {
+  auto result = json::parse(in.data);
   json extracted;
+
   if (result.contains("id")) {
-    extracted["id"] = result["id"];
+    if (!result["id"].is_null()) {
+      extracted["id"] = result["id"];
+    }
   }
   if (result.contains("name")) {
-    extracted["name"] = result["name"];
+    if (!result["name"].is_null()) {
+      extracted["name"] = result["name"];
+    }
   }
   if (result.contains("country")) {
-    extracted["country"] = result["country"];
+    if (!result["country"].is_null()) {
+      extracted["country"] = result["country"];
+    }
   }
   if (result.contains("type")) {
-    extracted["type"] = result["type"];
+    if (!result["type"].is_null()) {
+      extracted["type"] = result["type"];
+    }
   }
   if (result.contains("genres")) {
     extracted["genres"] = json::array();
     for (const auto &genre : result["genres"]) {
-      if (genre.contains("name")) {
+      if (genre.contains("name") && !genre["name"].is_null()) {
         extracted["genres"].push_back(genre["name"]);
       }
     }
   }
 
-  return extracted;
-};
+  return JsonRecord{extracted, in.checkpoint};
+}
 
-void JsonDeserializer::start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
-                             std::shared_ptr<TSQueue<JsonRecord>> sinkQueue) {
+void JsonDeserializer::start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue,
+                             std::shared_ptr<TSQueue<GenericRecord>> sinkQueue) {
   // Ensure the thread is not already running
   if (_thread.joinable()) {
     throw std::runtime_error("Already running!");
@@ -45,27 +53,24 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<StringRecord>> sourceQueue,
     std::cout << "Starting processing messages\n";
 
     while (!_stopFlag) {
-      Record message = sourceQueue->pop();
+      StringRecord message = std::get<StringRecord>(sourceQueue->pop());
       if (message.data == "EOF" && message.checkpoint == -1) {
         break;
       }
+      
+      std::cout << "Checkpoint: " << message.checkpoint << std::endl;
 
       // This process can throw so we print the output for debugging
       std::string data_copy;
       try {
-        data_copy = message.data; // Make a copy for error reporting
-        json processedMessage = process(std::move(message.data));
+        auto processedMessage = process(message);
 
-        while (!sinkQueue->try_push(
-            JsonRecord{std::move(processedMessage), message.checkpoint})) {
+        while (!sinkQueue->try_push(processedMessage)) {
           std::this_thread::yield();
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
       } catch (const json::exception &e) {
-        std::cerr << "Cannot process: " << data_copy << " - Error: " << e.what()
-                  << std::endl;
-      } catch (...) {
-        std::cerr << "Cannot process: " << data_copy << " - Unknown error"
+        std::cerr << "Cannot process: " << message.data << " - Error: " << e.what()
                   << std::endl;
       }
 

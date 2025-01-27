@@ -28,8 +28,8 @@ protected:
 TEST_F(JsonDeserializerTest, DeserializeJson)
 {
     // Create a test queue of records
-    auto sourceQueue = std::make_shared<TSQueue<StringRecord>>(128);
-    auto sinkQueue = std::make_shared<TSQueue<JsonRecord>>(128);
+    auto sourceQueue = std::make_shared<TSQueue<GenericRecord>>(128);
+    auto sinkQueue = std::make_shared<TSQueue<GenericRecord>>(128);
 
     JsonDeserializer deserializer;
     deserializer.start(sourceQueue, sinkQueue);
