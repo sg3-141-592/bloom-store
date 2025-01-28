@@ -13,4 +13,5 @@ template <typename TData, typename TCheckpoint> struct Record {
 
 typedef Record<std::string, std::streampos> StringRecord;
 typedef Record<json, std::streampos> JsonRecord;
-typedef std::variant<StringRecord, JsonRecord> GenericRecord;
+typedef Record<std::vector<std::string>, int> SqliteRecord;
+typedef std::variant<StringRecord, JsonRecord, SqliteRecord> GenericRecord;

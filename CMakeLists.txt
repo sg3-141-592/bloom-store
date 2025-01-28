@@ -4,7 +4,7 @@ project(IlmBloomStore VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 # if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 #     add_compile_options(
 #         -Wall
@@ -54,6 +54,10 @@ set_target_properties(libbloom_static PROPERTIES
     IMPORTED_LOCATION ${libbloom_SOURCE_DIR}/build/libbloom.a
 )
 
+find_package (SQLite3)
+
+include_directories(${SQLite3_INCLUDE_DIRS})
+
 FetchContent_Declare(
     nlohmann_json
     URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
@@ -71,6 +75,7 @@ FetchContent_MakeAvailable(googletest)
 
 set(SOURCES
     DataSource/FileDataSource.cpp
+    DataSource/SqliteDataSource.cpp
     DataSink/FolderDataSink.cpp
     DataSink/CompressBundle.cpp
     RecordProcessor/JsonDeserializer.cpp
@@ -85,7 +90,7 @@ add_executable(ArchiveFiles ${SOURCES} Archive.cpp)
 
 add_dependencies(ArchiveFiles build_libbloom)
 
-target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
+target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static sqlite3)
 
 # -------------------------------------------------------
 # Searching
@@ -101,7 +106,7 @@ include_directories(${argparse_SOURCE_DIR}/include)
 
 add_executable(Search Search.cpp Config.cpp Search/SearchRecords.cpp DataSink/CompressBundle.cpp)
 
-target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static)
+target_link_libraries(Search PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static sqlite3)
 
 # -------------------------------------------------------
 # Testing
@@ -125,7 +130,7 @@ target_link_libraries(
     gtest_main
     nlohmann_json::nlohmann_json
     ZLIB::ZLIB
-    libbloom_static
+    libbloom_static sqlite3
 )
 
 add_test(
