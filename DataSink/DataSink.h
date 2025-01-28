@@ -12,11 +12,10 @@ using json = nlohmann::json;
 
 class DataSink {
 public:
-  virtual auto writeNext(json itemIn) -> bool = 0;
-  virtual ~DataSink() = default;
   virtual void start(std::shared_ptr<TSQueue<GenericRecord>> queue) = 0;
-  virtual auto isCompleted() -> bool { return completed; };
+  virtual bool isCompleted() { return completed; };
   virtual void stop() = 0;
+  virtual ~DataSink() = default;
 
 protected:
   std::atomic<bool> completed = false;

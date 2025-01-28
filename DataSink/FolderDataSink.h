@@ -39,8 +39,8 @@ public:
   FolderDataSink(getPathFuncType getPathFunc, std::shared_ptr<Config> config);
   bool writeNext(json in);
   void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
-  ~FolderDataSink();
   void stop();
+  ~FolderDataSink();
 
 private:
   getPathFuncType _getPathFunc;

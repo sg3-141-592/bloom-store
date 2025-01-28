@@ -26,6 +26,7 @@ void FileDataSource::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
     // Get initial checkpoint for the file
     std::streampos checkpoint = infile.tellg();
 
+    // While there's still lines in the file keep loading
     std::string nextline;
     while (getline(infile, nextline) && !_stopFlag) {
       
