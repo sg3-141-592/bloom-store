@@ -11,12 +11,15 @@
 
 DataPipeline::DataPipeline(
     std::shared_ptr<DataSource> source,
-    std::shared_ptr<DataSink> sink, std::shared_ptr<Config> config) {
+    std::shared_ptr<DataSink> sink,
+    std::shared_ptr<Config> config)
+{
   _source = source;
   _sink = sink;
   _config = config;
 };
 
+template <typename ProcessorType>
 void DataPipeline::process() {
   // Setup Source
   auto sourceToProcessorQueue =
@@ -30,7 +33,7 @@ void DataPipeline::process() {
 
   // Create the number of processors specified in the config
   for (size_t i = 0; i < _config->generalConfig.NumberProcessingThreads; i++) {
-    auto processor = std::make_shared<JsonDeserializer>();
+    auto processor = std::make_shared<ProcessorType>();
     processor->start(sourceToProcessorQueue, processorToSinkQueue);
     _processors.push_back(processor);
   }
@@ -38,12 +41,21 @@ void DataPipeline::process() {
   // Wait for source, sink and processors to finish
   bool completed = false;
   while (!completed) {
+    
+    // Short pause to stop thrashing the `isCompleted` locks()
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     completed = _source->isCompleted() && _sink->isCompleted();
     for (auto processor : _processors) {
       completed = completed && processor->isCompleted();
     }
   }
 };
+
+
+// Have to explicitly instantiate this template, otherwise we'd need to make
+// process<> visible in the header file
+template void DataPipeline::process<JsonDeserializer>();
 
 void DataPipeline::stop() {
   _source->stop();

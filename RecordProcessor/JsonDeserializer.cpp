@@ -2,10 +2,6 @@
 
 #include <iostream>
 
-JsonDeserializer::JsonDeserializer() {
-  _metricsTracker = std::make_unique<MetricsTracker>("JsonDeserializer");
-};
-
 JsonRecord JsonDeserializer::process(StringRecord in) {
   auto result = json::parse(in.data);
   json extracted;

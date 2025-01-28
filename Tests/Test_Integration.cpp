@@ -28,15 +28,15 @@ protected:
 TEST_F(IntegrationTest, SmallFile)
 {
     // Push a 5 entry file and check if all of the values can be retrieved
-    auto testConfig = std::make_shared<Config>();
+    auto testConfig = std::make_shared<Config>("./test_config.ini");
     auto pipeline = new DataPipeline(
         std::make_shared<FileDataSource>(testConfig),
         std::make_shared<FolderDataSink>(get_path_func, testConfig),
         testConfig
     );
     
-    pipeline->process();
-
+    pipeline->process<JsonDeserializer>();
+    
     std::vector<std::string> BandNames = {"Rados", "Power Tool"};
     for (auto &bandName : BandNames)
     {

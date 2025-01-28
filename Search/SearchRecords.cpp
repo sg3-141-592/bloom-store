@@ -11,8 +11,10 @@ namespace fs = std::filesystem;
 
 #include "../Config.h"
 #include "../DataSink/CompressBundle.h"
+#include "../Utilities/CommonTypes.h"
 
 json processBloomFile(std::string filename, std::string name) {
+    
     bloom bloomFilter;
     bloom_load(&bloomFilter, const_cast<char *>(filename.c_str()));
 

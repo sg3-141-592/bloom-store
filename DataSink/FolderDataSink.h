@@ -24,7 +24,6 @@ struct FolderData {
         1024); // Pre-allocate since we'll be appending to the buffer a lot
 
     // Initialize the bloom filter
-    // TODO: Drive the bloom config off the ini file
     // The bloom filter must at minimum be 1000 in size
     if (bloom_init2(&bloomFilter, bloomSize, bloomProbability)) {
       std::cerr << "Failed to initialize bloom filter" << std::endl;
@@ -36,7 +35,7 @@ struct FolderData {
 
 class FolderDataSink : public DataSink {
 public:
-  FolderDataSink(getPathFuncType getPathFunc, std::shared_ptr<Config> config);
+  FolderDataSink(getPathFuncType getPathFunc, std::shared_ptr<Config> config) : _getPathFunc(getPathFunc), _config(std::move(config)) {};
   bool writeNext(json in);
   void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
   void stop();
@@ -46,6 +45,6 @@ private:
   getPathFuncType _getPathFunc;
   std::map<std::string, std::unique_ptr<FolderData>> _pathToHook;
   std::thread _thread;
-  std::unique_ptr<MetricsTracker> _metricsTracker;
+  std::unique_ptr<MetricsTracker> _metricsTracker = std::make_unique<MetricsTracker>("FolderDataSink");
   std::shared_ptr<Config> _config;
 };

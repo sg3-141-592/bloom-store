@@ -10,9 +10,12 @@
 class DataPipeline {
 public:
   DataPipeline(std::shared_ptr<DataSource> source,
-               std::shared_ptr<DataSink> sink, std::shared_ptr<Config> config);
+               std::shared_ptr<DataSink> sink,
+               std::shared_ptr<Config> config);
 
+  template <typename ProcessorType>
   void process();
+  
   void stop();
 
 private:

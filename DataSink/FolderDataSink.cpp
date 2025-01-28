@@ -5,13 +5,6 @@
 #include <filesystem>
 #include <iostream>
 
-FolderDataSink::FolderDataSink(getPathFuncType getPathFunc,
-                               std::shared_ptr<Config> config) {
-  _getPathFunc = getPathFunc;
-  _metricsTracker = std::make_unique<MetricsTracker>("FolderDataSink");
-  _config = config;
-}
-
 auto FolderDataSink::writeNext(json itemIn) -> bool {
   // Type can be null which we assign to other
   std::string type = "other";

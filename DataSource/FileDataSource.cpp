@@ -7,11 +7,6 @@
 
 #define SLEEP_TIME 100 // how long to sleep when queues are full
 
-FileDataSource::FileDataSource(std::shared_ptr<Config> config) {
-  _metricsTracker = std::make_unique<MetricsTracker>("FileDataSource");
-  _config = std::move(config);
-};
-
 void FileDataSource::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
   _thread = std::thread([this, queue]() {
     std::cout << "Starting loading messages\n";
@@ -29,7 +24,7 @@ void FileDataSource::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
     // While there's still lines in the file keep loading
     std::string nextline;
     while (getline(infile, nextline) && !_stopFlag) {
-      
+
       // Push value to the queue
       if (!queue->try_push(StringRecord{nextline, checkpoint})) {
         // If can't push to the queue, then pause and try again

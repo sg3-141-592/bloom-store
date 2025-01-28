@@ -11,13 +11,14 @@
 
 class FileDataSource : public DataSource {
 public:
-  FileDataSource(std::shared_ptr<Config> config);
+  FileDataSource(std::shared_ptr<Config> config) : _config(std::move(config)){};
   void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
   void stop();
   ~FileDataSource();
 
 private:
   std::thread _thread;
-  std::unique_ptr<MetricsTracker> _metricsTracker;
+  std::unique_ptr<MetricsTracker> _metricsTracker =
+      std::make_unique<MetricsTracker>("FileDataSource");
   std::shared_ptr<Config> _config;
 };

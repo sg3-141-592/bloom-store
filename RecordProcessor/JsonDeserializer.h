@@ -8,7 +8,6 @@
 
 class JsonDeserializer : public AbstractProcessor {
 public:
-  JsonDeserializer();
   JsonRecord process(StringRecord in);
   void start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue,
              std::shared_ptr<TSQueue<GenericRecord>> sinkQueue);
@@ -17,5 +16,5 @@ public:
 
 private:
   std::thread _thread;
-  std::unique_ptr<MetricsTracker> _metricsTracker;
+  std::unique_ptr<MetricsTracker> _metricsTracker = std::make_unique<MetricsTracker>("JsonDeserializer");
 };

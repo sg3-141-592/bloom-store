@@ -28,12 +28,12 @@ int main() {
   auto config = std::make_shared<Config>();
 
   auto fileSource = std::make_shared<FileDataSource>(config);
-  // auto sqliteSource = std::make_shared<SqliteDataSource>(config);
+  
   auto folderSink = std::make_shared<FolderDataSink>(get_path_func, config);
 
   pipeline = std::make_unique<DataPipeline>(fileSource, folderSink, config);
 
-  pipeline->process();
+  pipeline->process<JsonDeserializer>();
 
   return 0;
 }
