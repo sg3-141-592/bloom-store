@@ -74,15 +74,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 set(SOURCES
-    DataSource/FileDataSource.cpp
-    DataSource/SqliteDataSource.cpp
     DataSink/FolderDataSink.cpp
     DataSink/CompressBundle.cpp
+    DataSource/FileDataSource.cpp
+    DataSource/SqliteDataSource.cpp
     RecordProcessor/JsonDeserializer.cpp
-    Utilities/Checkpoint.cpp
-    Config.cpp
-    Utilities/ProgramLock.cpp
     Search/SearchRecords.cpp
+    Config.cpp
 )
 
 add_executable(ArchiveFiles ${SOURCES} Archive.cpp)

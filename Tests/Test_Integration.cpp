@@ -30,12 +30,12 @@ TEST_F(IntegrationTest, SmallFile)
     // Push a 5 entry file and check if all of the values can be retrieved
     auto testConfig = std::make_shared<Config>("./test_config.ini");
     auto pipeline = std::make_shared<DataPipeline<FileDataSource, FolderDataSink>>(
-        testConfig
+        testConfig, get_path_func
     );
     
     pipeline->process<JsonDeserializer>();
     
-    std::vector<std::string> BandNames = {"Rados", "Power Tool"};
+    std::vector<std::string> BandNames = {"The Sticky Five Pin", "Rados"};
     for (auto &bandName : BandNames)
     {
         auto results = SearchRecords(bandName, "");
