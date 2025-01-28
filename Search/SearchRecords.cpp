@@ -1,5 +1,6 @@
 #include "SearchRecords.h"
 
+#include <atomic>
 #include <iostream>
 #include <vector>
 
@@ -11,9 +12,40 @@ namespace fs = std::filesystem;
 #include "../Config.h"
 #include "../DataSink/CompressBundle.h"
 
+json processBloomFile(std::string filename, std::string name) {
+  bloom bloomFilter;
+  bloom_load(&bloomFilter, const_cast<char *>(filename.c_str()));
+
+  if (bloom_check(&bloomFilter, name.c_str(),
+                  static_cast<int>(name.length()))) {
+    
+    // TODO: Can use a shared pointer in future to ensure bloom_free is called
+    bloom_free(&bloomFilter);
+
+    try {
+        auto jsonPath = filename.substr(0, filename.length() - 6) + ".json.gz";
+        auto jsonContent = readGzipFileToString(jsonPath);
+        
+        std::istringstream stream(jsonContent);
+        std::string line;
+        while (std::getline(stream, line)) {
+            auto result = json::parse(line);
+            if (result["name"] == name) {
+                return result;
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error processing file " << filename << ": " << e.what() << std::endl;
+    }
+  }
+
+  bloom_free(&bloomFilter);
+
+  return nullptr;
+};
+
 std::vector<json> SearchRecords(std::string name, std::string type) {
   std::string path = get_path_func(name, type);
-  std::vector<json> results;
 
   // Iterate over all the bloom filters in the directory for matches
   std::vector<std::string> bloomFiles;
@@ -30,27 +62,13 @@ std::vector<json> SearchRecords(std::string name, std::string type) {
     }
   }
 
+  std::vector<json> results;
   // Check all the bloom filters for matches
   for (auto &bloomFile : bloomFiles) {
-    bloom bloomFilter;
-    bloom_load(&bloomFilter, const_cast<char *>(bloomFile.c_str()));
-
-    if (bloom_check(&bloomFilter, name.c_str(),
-                    static_cast<int>(name.length()))) {
-      bloomFile.erase(bloomFile.end() - 6, bloomFile.end());
-      std::string jsonGzFile = bloomFile + ".json.gz";
-      std::string jsonGzString = readGzipFileToString(jsonGzFile);
-      std::istringstream stream(jsonGzString);
-      std::string line;
-      while (std::getline(stream, line)) {
-        json result = json::parse(line);
-        if (result["name"] == name) {
-          results.push_back(result);
-        }
-      }
+    auto result = processBloomFile(bloomFile, name);
+    if(result != nullptr) {
+      results.push_back(result);
     }
-
-    bloom_free(&bloomFilter);
   }
 
   return results;
