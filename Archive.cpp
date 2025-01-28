@@ -15,7 +15,7 @@ using json = nlohmann::json;
 
 void signalHandler(int signum);
 
-std::unique_ptr<DataPipeline> pipeline;
+std::unique_ptr<DataPipeline<FileDataSource, FolderDataSink>> pipeline;
 
 int main() {
   // Make Archive program interruptible
@@ -27,11 +27,7 @@ int main() {
   // Load default config.ini on start-up
   auto config = std::make_shared<Config>();
 
-  auto fileSource = std::make_shared<FileDataSource>(config);
-  
-  auto folderSink = std::make_shared<FolderDataSink>(get_path_func, config);
-
-  pipeline = std::make_unique<DataPipeline>(fileSource, folderSink, config);
+  pipeline = std::make_unique<DataPipeline<FileDataSource, FolderDataSink>>(config, get_path_func);
 
   pipeline->process<JsonDeserializer>();
 

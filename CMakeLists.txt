@@ -80,7 +80,6 @@ set(SOURCES
     DataSink/CompressBundle.cpp
     RecordProcessor/JsonDeserializer.cpp
     Utilities/Checkpoint.cpp
-    DataPipeline.cpp
     Config.cpp
     Utilities/ProgramLock.cpp
     Search/SearchRecords.cpp
