@@ -5,7 +5,7 @@
 
 typedef std::function<std::string(std::string, std::string)> getPathFuncType;
 
-std::string get_path_func(std::string name, std::string type = "");
+std::string GetPathFunc(std::string name, std::string type = "");
 
 struct GeneralConfig {
   int QueueSize = 1024;
@@ -17,15 +17,15 @@ struct SourceConfig {
 };
 
 struct SinkConfig {
-  int NumberItemsPerBundle = 1000;
-  float BloomFalsePositiveProbability = 0.01F;
+  unsigned int NumberItemsPerBundle = 1000;
+  double BloomFalsePositiveProbability = 0.01;
   int CheckpointFrequency = 1000;
 };
 
 class Config {
 public:
   Config() : Config("config.ini") {}
-  Config(std::string path);
+  Config(const std::string &path);
 
   GeneralConfig generalConfig;
   SourceConfig sourceConfig;

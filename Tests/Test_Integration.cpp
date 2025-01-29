@@ -30,7 +30,7 @@ TEST_F(IntegrationTest, SmallFile)
     // Push a 5 entry file and check if all of the values can be retrieved
     auto testConfig = std::make_shared<Config>("./test_config.ini");
     auto pipeline = std::make_shared<DataPipeline<FileDataSource, FolderDataSink>>(
-        testConfig, get_path_func
+        testConfig, GetPathFunc
     );
     
     pipeline->process<JsonDeserializer>();

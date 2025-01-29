@@ -45,7 +45,7 @@ void DataPipeline<SourceType, SinkType>::process() {
   _sink->start(processorToSinkQueue);
 
   // Create the number of processors specified in the config
-  for (size_t i = 0; i < _config->generalConfig.NumberProcessingThreads; i++) {
+  for (int i = 0; i < _config->generalConfig.NumberProcessingThreads; i++) {
     auto processor = std::make_shared<ProcessorType>();
     processor->start(sourceToProcessorQueue, processorToSinkQueue);
     _processors.push_back(processor);
@@ -68,7 +68,7 @@ void DataPipeline<SourceType, SinkType>::process() {
 template <typename SourceType, typename SinkType>
 void DataPipeline<SourceType, SinkType>::stop() {
   _source->stop();
-  for (const auto processor : _processors) {
+  for (const auto &processor : _processors) {
     processor->stop();
   }
   _sink->stop();

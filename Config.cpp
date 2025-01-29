@@ -5,27 +5,18 @@
 
 #include "Config.h"
 
-std::string get_path_func(std::string name, std::string type) {
+std::string GetPathFunc(std::string name, std::string type) {
   // Normalise the folder names, there's some inconsistent casing of them on the dataset
   if (!type.empty()) {
     type[0] = std::toupper(type[0]);
   }
   
-  char first_char = std::tolower(name[0]);
+  const char first_char = std::tolower(name[0]);
 
-  if (isalnum(first_char)) {
-    if (type != "") {
-      return "archive/" + std::string(1, first_char) + "/" + type + "/";
-    } else {
-      return "archive/" + std::string(1, first_char) + "/";
-    }
-  } else {
-    if (type != "") {
-      return "archive/unknown/" + type + "/";
-    } else {
-      return "archive/unknown/";
-    }
-  }
+  std::string pathString = "archive/" + (isalnum(first_char) > 0 ? std::string(1, first_char) : "unknown") + "/";
+  pathString += (type.empty() ? "" : type + "/");
+
+  return pathString;
 }
 
 template <typename T>
@@ -50,7 +41,7 @@ T getMandatoryConfigValue(const boost::property_tree::ptree &pt,
   }
 }
 
-Config::Config(std::string path) {
+Config::Config(const std::string &path) {
   boost::property_tree::ptree pt;
   boost::property_tree::ini_parser::read_ini(path, pt);
 
@@ -60,10 +51,10 @@ Config::Config(std::string path) {
       getOptionalConfigValue<int>(pt, "General.number_processing_threads",
                                   generalConfig.NumberProcessingThreads);
   sourceConfig.Path = getMandatoryConfigValue<std::string>(pt, "Source.path");
-  sinkConfig.NumberItemsPerBundle = getOptionalConfigValue<int>(
+  sinkConfig.NumberItemsPerBundle = getOptionalConfigValue<unsigned int>(
       pt, "Sink.number_items_per_bundle", sinkConfig.NumberItemsPerBundle);
   sinkConfig.BloomFalsePositiveProbability =
-      getOptionalConfigValue<float>(pt, "Sink.bloom_false_positive_probability",
+      getOptionalConfigValue<double>(pt, "Sink.bloom_false_positive_probability",
                                     sinkConfig.BloomFalsePositiveProbability);
   sinkConfig.CheckpointFrequency = getOptionalConfigValue<int>(
       pt, "Sink.checkpoint_frequency", sinkConfig.CheckpointFrequency);

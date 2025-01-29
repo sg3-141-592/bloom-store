@@ -2,40 +2,37 @@
 
 #include <iostream>
 
-JsonRecord JsonDeserializer::process(StringRecord in) {
-  auto result = json::parse(in.data);
-  json extracted;
+void JsonDeserializer::extractField(const json& source, json& target, const std::string& fieldName) {
+    if (source.contains(fieldName) && !source[fieldName].is_null()) {
+        target[fieldName] = source[fieldName];
+    }
+}
 
-  if (result.contains("id")) {
-    if (!result["id"].is_null()) {
-      extracted["id"] = result["id"];
-    }
-  }
-  if (result.contains("name")) {
-    if (!result["name"].is_null()) {
-      extracted["name"] = result["name"];
-    }
-  }
-  if (result.contains("country")) {
-    if (!result["country"].is_null()) {
-      extracted["country"] = result["country"];
-    }
-  }
-  if (result.contains("type")) {
-    if (!result["type"].is_null()) {
-      extracted["type"] = result["type"];
-    }
-  }
-  if (result.contains("genres")) {
-    extracted["genres"] = json::array();
-    for (const auto &genre : result["genres"]) {
+JsonRecord JsonDeserializer::process(const StringRecord& in) {
+  auto inParsed = json::parse(in.data);
+  json extractedFields;
+
+  // Manually extracting some named fields for now
+  extractField(inParsed, extractedFields, "id");
+  extractField(inParsed, extractedFields, "name");
+  extractField(inParsed, extractedFields, "country");
+  extractField(inParsed, extractedFields, "type");
+
+  if (inParsed.contains("genres")) {
+    extractedFields["genres"] = json::array();
+    for (const auto &genre : inParsed["genres"]) {
       if (genre.contains("name") && !genre["name"].is_null()) {
-        extracted["genres"].push_back(genre["name"]);
+        extractedFields["genres"].push_back(genre["name"]);
       }
     }
   }
 
-  return JsonRecord{extracted, in.checkpoint};
+  if(inParsed.contains("life-span") && inParsed["life-span"].contains("begin"))
+  {
+    extractedFields["begin"] = inParsed["life-span"]["begin"];
+  }
+
+  return JsonRecord{extractedFields, in.checkpoint};
 }
 
 void JsonDeserializer::start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue,

@@ -47,7 +47,7 @@ json processBloomFile(std::string filename, std::string name) {
 }
 
 std::vector<json> SearchRecords(std::string name, std::string type) {
-    std::string path = get_path_func(name, type);
+    std::string path = GetPathFunc(name, type);
 
     // Iterate over all the bloom filters in the directory for matches
     std::vector<std::string> bloomFiles;

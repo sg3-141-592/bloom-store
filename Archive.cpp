@@ -27,7 +27,7 @@ int main() {
   // Load default config.ini on start-up
   auto config = std::make_shared<Config>();
 
-  pipeline = std::make_unique<DataPipeline<FileDataSource, FolderDataSink>>(config, get_path_func);
+  pipeline = std::make_unique<DataPipeline<FileDataSource, FolderDataSink>>(config, GetPathFunc);
 
   pipeline->process<JsonDeserializer>();
 
