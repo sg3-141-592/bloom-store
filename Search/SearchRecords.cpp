@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 #include "../DataSink/CompressBundle.h"
 #include "../Utilities/CommonTypes.h"
 
-json processBloomFile(std::string filename, std::string name) {
+json processBloomFile(const std::string &filename, const std::string &name) {
     
     bloom bloomFilter;
     bloom_load(&bloomFilter, const_cast<char *>(filename.c_str()));
@@ -21,7 +21,8 @@ json processBloomFile(std::string filename, std::string name) {
     if (bloom_check(&bloomFilter, name.c_str(),
                     static_cast<int>(name.length()))) {
         
-        // TODO: Can use a shared pointer in future to ensure bloom_free is called
+        // TODO: Can use a shared pointer with a custom destructor in future to
+        // ensure bloom_free is called
         bloom_free(&bloomFilter);
 
         try {
@@ -46,7 +47,7 @@ json processBloomFile(std::string filename, std::string name) {
     return nullptr;
 }
 
-std::vector<json> SearchRecords(std::string name, std::string type) {
+std::vector<json> SearchRecords(const std::string &name, const std::string &type) {
     std::string path = GetPathFunc(name, type);
 
     // Iterate over all the bloom filters in the directory for matches

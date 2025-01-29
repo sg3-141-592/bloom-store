@@ -7,6 +7,7 @@
 #include <iostream>
 #include <mutex>
 #include <random>
+#include <thread>
 
 class MetricsTracker {
 private:
@@ -18,7 +19,7 @@ private:
   std::fstream logFile;
 
 public:
-  MetricsTracker(std::string name) : name(name) {
+  MetricsTracker(const std::string &name) : name(std::move(name)) {
     // Randomly name files to avoid collisions between duplicate threads
     std::random_device rd;
     std::mt19937 gen(rd());

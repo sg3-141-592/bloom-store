@@ -83,4 +83,8 @@ void JsonDeserializer::stop() {
   }
 }
 
-JsonDeserializer::~JsonDeserializer() { stop(); };
+JsonDeserializer::~JsonDeserializer() {
+  if (_thread.joinable()) {
+    _thread.join();
+  }
+};

@@ -43,8 +43,7 @@ void FileDataSource::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
 
     // Push EOF to terminate the queue
     // We have to push one of these for each worker we have
-    for (size_t i = 0; i < _config->generalConfig.NumberProcessingThreads;
-         i++) {
+    for (int i = 0; i < _config->generalConfig.NumberProcessingThreads; i++) {
       queue->push(StringRecord{"EOF", -1});
     }
 
@@ -63,4 +62,8 @@ void FileDataSource::stop() {
   }
 }
 
-FileDataSource::~FileDataSource() { stop(); };
+FileDataSource::~FileDataSource() { 
+  if (_thread.joinable()) {
+    _thread.join();
+  }
+ };

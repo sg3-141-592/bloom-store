@@ -32,7 +32,7 @@ auto FolderDataSink::writeNext(json itemIn) -> bool {
   // filter
   bloom_add(&_pathToHook[path]->bloomFilter,
             itemIn["name"].get<std::string>().c_str(),
-            itemIn["name"].get<std::string>().length());
+            static_cast<int>(itemIn["name"].get<std::string>().length()));
 
   _pathToHook[path]->buffer.append(itemIn.dump() + "\n");
   _pathToHook[path]->recordCount++;
@@ -98,4 +98,8 @@ void FolderDataSink::stop() {
   }
 }
 
-FolderDataSink::~FolderDataSink() { stop(); }
+FolderDataSink::~FolderDataSink() {
+  if (_thread.joinable()) {
+    _thread.join();
+  }
+}

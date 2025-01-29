@@ -14,8 +14,8 @@
 #include "../MetricsTracker.h"
 
 struct FolderData {
-  int recordCount = 0;
-  int bundleId = 0;
+  unsigned int recordCount = 0;
+  unsigned int bundleId = 0;
   std::string buffer;
   bloom bloomFilter;
 
@@ -37,9 +37,9 @@ class FolderDataSink : public DataSink {
 public:
   FolderDataSink(getPathFuncType getPathFunc, std::shared_ptr<Config> config) : _getPathFunc(std::move(getPathFunc)), _config(std::move(config)) {};
   bool writeNext(json itemIn);
-  void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
-  void stop();
-  ~FolderDataSink();
+  void start(std::shared_ptr<TSQueue<GenericRecord>> queue) override;
+  void stop() override;
+  ~FolderDataSink() override;
 
 private:
   getPathFuncType _getPathFunc;

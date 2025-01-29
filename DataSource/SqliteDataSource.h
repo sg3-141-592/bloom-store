@@ -11,9 +11,9 @@
 class SqliteDataSource : public DataSource {
 public:
   SqliteDataSource(std::shared_ptr<Config> config);
-  void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
-  void stop();
-  ~SqliteDataSource();
+  void start(std::shared_ptr<TSQueue<GenericRecord>> queue) override;
+  void stop() override;
+  ~SqliteDataSource() override;
 
 private:
   std::thread _thread;

@@ -9,12 +9,12 @@
 class JsonDeserializer : public AbstractProcessor {
 public:
   void start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue,
-             std::shared_ptr<TSQueue<GenericRecord>> sinkQueue);
-  void stop();
-  ~JsonDeserializer();
+             std::shared_ptr<TSQueue<GenericRecord>> sinkQueue) override;
+  void stop() override;
+  ~JsonDeserializer() override;
 
 private:
-  void extractField(const json& source, json& target, const std::string& fieldName);
+  static void extractField(const json& source, json& target, const std::string& fieldName);
   JsonRecord process(const StringRecord& in);
   
   std::thread _thread;

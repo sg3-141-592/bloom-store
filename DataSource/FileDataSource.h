@@ -12,9 +12,9 @@
 class FileDataSource : public DataSource {
 public:
   FileDataSource(std::shared_ptr<Config> config) : _config(std::move(config)){};
-  void start(std::shared_ptr<TSQueue<GenericRecord>> queue);
-  void stop();
-  ~FileDataSource();
+  void start(std::shared_ptr<TSQueue<GenericRecord>> queue) override;
+  void stop() override;
+  ~FileDataSource() override;
 
 private:
   std::thread _thread;
