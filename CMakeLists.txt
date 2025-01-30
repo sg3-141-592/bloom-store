@@ -4,25 +4,25 @@ project(IlmBloomStore VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE Debug)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Wshadow
-        -Wnon-virtual-dtor
-        -Wold-style-cast
-        -Wcast-align
-        -Wunused
-        -Woverloaded-virtual
-        -Wconversion
-        -Wsign-conversion
-        -Wnull-dereference
-        -Wdouble-promotion
-        -Wformat=2
-    )
-endif()
+set(CMAKE_BUILD_TYPE Release)
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#     add_compile_options(
+#         -Wall
+#         -Wextra
+#         -Wpedantic
+#         -Wshadow
+#         -Wnon-virtual-dtor
+#         -Wold-style-cast
+#         -Wcast-align
+#         -Wunused
+#         -Woverloaded-virtual
+#         -Wconversion
+#         -Wsign-conversion
+#         -Wnull-dereference
+#         -Wdouble-promotion
+#         -Wformat=2
+#     )
+# endif()
 
 include(FetchContent)
 
@@ -73,11 +73,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+include(FetchContent)
+
+FetchContent_Declare(
+  simdjson
+  GIT_REPOSITORY https://github.com/simdjson/simdjson.git
+  GIT_TAG  tags/v3.6.0
+  GIT_SHALLOW TRUE)
+
+FetchContent_MakeAvailable(simdjson)
+include_directories(${simdjson_SOURCE_DIR}/include)
+
 set(SOURCES
     DataSink/FolderDataSink.cpp
     DataSink/CompressBundle.cpp
     DataSource/FileDataSource.cpp
     DataSource/SqliteDataSource.cpp
+    RecordProcessor/FastJsonDeserializer.cpp
     RecordProcessor/JsonDeserializer.cpp
     Search/SearchRecords.cpp
     Config.cpp
@@ -87,7 +99,7 @@ add_executable(ArchiveFiles ${SOURCES} Archive.cpp)
 
 add_dependencies(ArchiveFiles build_libbloom)
 
-target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static sqlite3)
+target_link_libraries(ArchiveFiles PRIVATE nlohmann_json::nlohmann_json ZLIB::ZLIB libbloom_static sqlite3 simdjson)
 
 # -------------------------------------------------------
 # Searching
@@ -128,6 +140,7 @@ target_link_libraries(
     nlohmann_json::nlohmann_json
     ZLIB::ZLIB
     libbloom_static sqlite3
+    simdjson
 )
 
 add_test(

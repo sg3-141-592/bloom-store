@@ -6,6 +6,7 @@
 #include "DataSink/FolderDataSink.h"
 #include "DataSource/FileDataSource.h"
 #include "DataSource/SqliteDataSource.h"
+#include "RecordProcessor/FastJsonDeserializer.h"
 #include "RecordProcessor/JsonDeserializer.h"
 
 #include <nlohmann/json.hpp>
@@ -29,7 +30,7 @@ int main() {
 
   pipeline = std::make_unique<DataPipeline<FileDataSource, FolderDataSink>>(config, GetPathFunc);
 
-  pipeline->process<JsonDeserializer>();
+  pipeline->process<FastJsonDeserializer>();
 
   return 0;
 }

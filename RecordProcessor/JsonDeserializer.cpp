@@ -52,7 +52,6 @@ void JsonDeserializer::start(std::shared_ptr<TSQueue<GenericRecord>> sourceQueue
       }
 
       // This process can throw so we print the output for debugging
-      std::string data_copy;
       try {
         auto processedMessage = process(message);
 
