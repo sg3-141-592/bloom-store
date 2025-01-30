@@ -29,7 +29,6 @@ void FileDataSource::start(std::shared_ptr<TSQueue<GenericRecord>> queue) {
       if (!queue->try_push(StringRecord{nextline, checkpoint})) {
         // If can't push to the queue, then pause and try again
         while (!queue->try_push(StringRecord{nextline, checkpoint})) {
-          std::this_thread::yield();
           std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
         }
       }
